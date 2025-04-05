@@ -1,0 +1,103 @@
+/* Navbar Container (Main Navbar) */
+.navbar-container {
+    background-color: #1e1e1e; /* Dark background */
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative; /* To position the mobile menu correctly */
+    padding: 0 1rem;
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 50;
+    margin: 10px;
+  }
+
+  .nav-item{
+    display: flex;
+  }
+  
+  .logo {
+    font-size: 1.25rem; /* Equivalent to text-xl in Tailwind */
+    font-weight: bold;
+    color: #3a7dff; /* Primary blue */
+  }
+
+  .employer-logo {
+    height: 40px; /* Set the height of the logo */
+    width: auto;  /* Keep aspect ratio intact */
+    margin-left: 10px;
+  }
+  
+  /* Hide menu items in navbar on small screens */
+  .navbar-menu {
+    display: none;
+  }
+  
+  /* Show menu items only on larger screens */
+  @media (min-width: 768px) {
+    .navbar-menu {
+      display: flex;
+      gap: 1.5rem; /* Space between navbar components */
+    }
+  }
+  
+  /* Mobile Menu Overlay (Backdrop) */
+  .mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 49;
+  }
+  
+/* Mobile Menu */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -100%; /* Start offscreen */
+    width: 80%;
+    max-width: 300px;
+    height: 100%;
+    background-color: #252525; /* Soft black for mobile menu */
+    transition: transform 0.3s ease-out;
+    z-index: 100; /* Ensures the mobile menu stays on top */
+    display: flex;
+    flex-direction: column;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .mobile-menu.open {
+    transform: translateX(-100%);
+    right: 0; /* Moves menu into view */
+  }
+  
+  .mobile-menu-container {
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .mobile-menu-item {
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .mobile-menu-item:hover {
+    background-color: #3a7dff; /* Primary blue on hover */
+  }
+  
+  /* Ensure the menu works well on mobile screens */
+  @media (max-width: 768px) {
+    .md\:hidden {
+      display: block !important;
+    }
+  }
+
+.settings-icon{
+  margin: 10px;
+}

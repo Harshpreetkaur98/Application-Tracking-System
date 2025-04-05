@@ -1,0 +1,50 @@
+
+.portal-container {
+  margin-left: 60px; /* space for sidebar */
+  padding: 20px;
+  background-color: #1e1e1e;
+  height: 100vh;
+  color: white;
+}
+
+.portal-heading {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #ddd;
+}
+
+.content-section {
+  display: flex;
+  gap: 40px;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.job-posts-container {
+  background-color: #d3d3d3;
+  padding: 20px;
+  border-radius: 20px;
+  width: 300px;
+}
+
+.job-posts-container h3 {
+  margin-top: 0;
+  color: black;
+}
+
+.job-card {
+  background-color: #6c63ff;
+  color: white;
+  padding: 15px;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.placeholder-box {
+  background-color: #d3d3d3;
+  width: 300px;
+  height: 300px;
+  border-radius: 20px;
+}

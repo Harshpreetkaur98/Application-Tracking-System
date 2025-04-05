@@ -1,0 +1,47 @@
+.scan-cv-container {
+  position: fixed;
+  bottom: 50px;  /* 50px from the bottom of the viewport */
+  left: 50%;  /* Center horizontally */
+  transform: translateX(-50%);  /* Adjust the position to truly center */
+  z-index: 1000;
+  padding: 10px;
+  border-radius: 10px;
+  pointer-events: none; /* Prevent interaction with other elements underneath */
+}
+
+.scan-cv-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  z-index: -1;
+}
+
+.scan-cv-button {
+  padding: 10px 20px;
+  font-size: 13px;
+  color: white;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, background-color 0.3s ease;
+  pointer-events: auto; /* Ensure the button is interactive */
+}
+
+.scan-cv-button:hover {
+  background-color: #003399;
+  transform: scale(1.1);
+}
+
+.scan-cv-button:active {
+  transform: scale(0.95);
+}

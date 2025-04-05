@@ -1,0 +1,24 @@
+.logo-quote-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%; 
+  margin-top: 0px;
+}
+
+.quote-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.quote-image {
+  width: 70%; 
+  max-width: 500px; 
+  height: auto; 
+  object-fit: contain;
+  margin-top: 20px;
+  margin-left: 50px;
+}

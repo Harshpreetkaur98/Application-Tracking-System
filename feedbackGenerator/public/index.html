@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Feedback Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+    h1 {
+      text-align: center;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>CV Feedback Generator</h1>
+    <form id="cv-form" enctype="multipart/form-data">
+      <input type="file" name="cv" required />
+      <textarea name="jobSpec" placeholder="Job Specifications" rows="4" required></textarea>
+      <input type="email" name="email" placeholder="Your Email" required />
+      <input type="email" name="senderEmail" placeholder="Your Sender Email" required />
+      <input type="password" name="senderPassword" placeholder="Your Sender Email Password" required />
+      <button type="submit">Generate Feedback</button>
+    </form>`
+    <div id="message"></div>
+  </div>
+
+  <script>
+    document.getElementById('cv-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+    
+      try {
+        console.log("📤 Sending request to server...");
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData
+        });
+    
+        const result = await response.json();
+        console.log("📩 Server Response:", result);
+    
+        const messageDiv = document.getElementById('message');
+    
+        if (result.success) {
+          messageDiv.innerHTML = '<p style="color: green;">' + result.message + '</p>';
+        } else {
+          messageDiv.innerHTML = '<p style="color: red;">' + result.message + '</p>';
+        }
+      } catch (error) {
+        console.error("❌ Fetch Error:", error);
+        document.getElementById('message').innerHTML = '<p style="color: red;">Error connecting to the server.</p>';
+      }
+    });
+    </script>
+    
+
+</body>
+</html>
