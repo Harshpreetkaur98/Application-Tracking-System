@@ -1,0 +1,43 @@
+
+.activity-page {
+  padding: 2rem;
+  background-color: #F3F4F6;
+  color: #111827;
+  min-height: 100vh;
+}
+.activity-page h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: black;
+}
+.activity-section {
+  margin-bottom: 2rem;
+}
+.activity-section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #374151;
+}
+.activity-card {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.activity-card p {
+  margin: 0.25rem 0;
+}
+.activity-card.saved {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.activity-card.saved button {
+  background: black;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}

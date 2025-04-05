@@ -1,3 +1,4 @@
+/* Navbar styling */
 .navbar-candidate {
   background-color: #000000;
   color: #BBBBBB;
@@ -5,6 +6,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
+  position: relative; /* Added this to make dropdown positioning work */
 }
 
 .navbar-candidate .logo {
@@ -36,4 +38,41 @@
 .logo-candidate {
   height: 60px; /* Make the logo fit the container */
   width: auto; /* Keep aspect ratio intact */
+}
+
+/* Profile Logo Style */
+.profile-logo {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  margin-left: 20px; /* Optional, to create space between profile and other nav items */
+}
+
+/* Dropdown Menu Style */
+.dropdown-menu {
+  position: absolute;
+  top: 50px; /* Adjust position below the profile logo */
+  right: 0; /* Align the dropdown to the right of the profile logo */
+  background-color: #222222;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  width: 150px; /* Width of the dropdown */
+  z-index: 1000;
+}
+
+.dropdown-menu button {
+  width: 100%;
+  padding: 10px;
+  background-color: #1e1e1e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.dropdown-menu button:hover {
+  background-color: #555;
 }
