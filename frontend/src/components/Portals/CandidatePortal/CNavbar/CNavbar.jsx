@@ -12,7 +12,7 @@ function CNavbar() {
   return (
     <header className="navbar-candidate">
       <div className="logo-container-candidate" onClick={handleClickLogo} style={{ cursor: "pointer" }}>
-        <img src={logoImage} alt="Logo" className="logo-candidate logo" />
+        <img src={logoImage} alt="Logo" className="logo-candidate" />
       </div>
 
       <nav>

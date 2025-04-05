@@ -1,4 +1,3 @@
-
 .navbar-candidate {
   background-color: #000000;
   color: #BBBBBB;
@@ -7,22 +6,34 @@
   align-items: center;
   padding: 1rem 2rem;
 }
+
 .navbar-candidate .logo {
   font-size: 1.5rem;
   font-weight: bold;
 }
+
 .navbar-candidate ul {
   list-style: none;
   display: flex;
   gap: 1.5rem;
+  margin: 0;
 }
+
 .navbar-candidate a {
   color: #BBBBBB;
   text-decoration: none;
 }
 
-.logo-container-candidate{
-  height: 40px; /* Set the height of the logo */
-  width: auto;  /* Keep aspect ratio intact */
-  margin-left: 10px;
+/* Logo container styling */
+.logo-container-candidate {
+  height: 40px; /* Adjust the height of the logo */
+  width: auto; /* Keep aspect ratio intact */
+  display: flex;
+  align-items: center; /* Center logo vertically */
+}
+
+/* Logo image styling */
+.logo-candidate {
+  height: 60px; /* Make the logo fit the container */
+  width: auto; /* Keep aspect ratio intact */
 }
