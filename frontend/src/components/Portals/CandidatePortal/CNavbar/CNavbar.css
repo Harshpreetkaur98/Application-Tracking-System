@@ -1,0 +1,28 @@
+
+.navbar-candidate {
+  background-color: #000000;
+  color: #BBBBBB;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+.navbar-candidate .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.navbar-candidate ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+.navbar-candidate a {
+  color: #BBBBBB;
+  text-decoration: none;
+}
+
+.logo-container-candidate{
+  height: 40px; /* Set the height of the logo */
+  width: auto;  /* Keep aspect ratio intact */
+  margin-left: 10px;
+}

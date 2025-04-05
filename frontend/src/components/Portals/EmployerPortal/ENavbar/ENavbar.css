@@ -19,7 +19,7 @@
   .logo {
     font-size: 1.25rem; /* Equivalent to text-xl in Tailwind */
     font-weight: bold;
-    color: #3a7dff; /* Primary blue */
+    color: #3a7dff;
   }
 
   .employer-logo {
@@ -88,7 +88,7 @@
   }
   
   .mobile-menu-item:hover {
-    background-color: #3a7dff; /* Primary blue on hover */
+    background-color: #3a7dff;
   }
   
   /* Ensure the menu works well on mobile screens */

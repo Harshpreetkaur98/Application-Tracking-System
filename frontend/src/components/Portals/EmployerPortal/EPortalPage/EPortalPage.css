@@ -1,25 +1,14 @@
 /* General Styles */
 .admin-portal {
-  font-family: 'Arial', sans-serif;
-  background-color: #fafafa;
-  color: white;
-  padding: 50px;
-  border-radius: 8px;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 50px;
-}
-
-  .admin-info-box{
-    border-radius: 20px;
-    background-color: #ffffff;
-    width: 100%;
-    height: 250px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-family: 'Arial', sans-serif;
+    background-color: #1E1E1E;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  h1, h2, h3, h4 {
+    font-family: 'Arial', sans-serif;
   }
 
   .admin-icon{

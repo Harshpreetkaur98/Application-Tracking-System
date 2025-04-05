@@ -1,16 +1,14 @@
-import { Routes, Route } from "react-router-dom";
-import CandidateDashboard from "./CPortalPage/CPortalPage";
 
-const CandidateApp = () => {
+import CNavbar from './CNavbar/CNavbar';
+import CPortalPage from './CPortalPage/CPortalPage';
+
+function CandidateApp() {
   return (
-    <div className="bg-[#1E1E1E] min-h-screen text-white">
-      <div className="container mx-auto px-6 py-6">
-        <Routes>
-          <Route path="/" element={<CandidateDashboard />} />
-        </Routes>
-      </div>
+    <div>
+      <CNavbar />
+      <CPortalPage />
     </div>
   );
-};
+}
 
 export default CandidateApp;
