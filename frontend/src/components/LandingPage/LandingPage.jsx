@@ -1,4 +1,3 @@
-import "react";
 import { useEffect, useRef } from "react";
 import SubscribeBox from "../Subscribe/Subscribe";
 import Quote from "../Quote/Quote";
@@ -20,11 +19,12 @@ const LandingPage = () => {
         behavior: "smooth",
       });
     }
-  }, []); 
+  }, [window.location.hash]); // Re-run effect when the hash changes
 
   return (
     <div>
       <Navbar />
+
       <div className="below-nav-content">
         <div>
           <Quote />
@@ -34,9 +34,12 @@ const LandingPage = () => {
           <ResumeTemplate />
         </div>
       </div>
+
       <div>
         <ScanCV />
       </div>
+
+      {/* Why Us section with reference for smooth scrolling */}
       <div ref={whyUsRef} id="whyus">
         <WhyUs />
       </div>

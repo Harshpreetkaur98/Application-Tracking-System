@@ -1,17 +1,18 @@
-import "react";
-import PropTypes from "prop-types";
 
-const TilePopup = ({ item }) => {
+import './tilepopup.css';
+import PropTypes from 'prop-types';
+
+function TilePopUp({ title, description }) {
   return (
-    <div className="tile-popup">
-      <p>{item.description}</p>
+    <div className="popup-container">
+      <h3>{title}</h3>
+      <p>{description}</p>
     </div>
   );
-};
-TilePopup.propTypes = {
-  item: PropTypes.shape({
-    description: PropTypes.string.isRequired,
-  }).isRequired,
+}
+TilePopUp.propTypes = {
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
 };
 
-export default TilePopup;
+export default TilePopUp;

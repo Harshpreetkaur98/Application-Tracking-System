@@ -20,3 +20,9 @@
   color: #BBBBBB;
   text-decoration: none;
 }
+
+.logo-container-candidate{
+  height: 40px; /* Set the height of the logo */
+  width: auto;  /* Keep aspect ratio intact */
+  margin-left: 10px;
+}
