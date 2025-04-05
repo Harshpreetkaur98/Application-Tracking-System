@@ -1,5 +1,5 @@
 
-import "../EPortalPage/EPortalPage.css";
+import "./EPortalPage.css";
 
 const EPortalPage = () => {
   return (
