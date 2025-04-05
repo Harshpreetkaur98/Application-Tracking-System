@@ -1,10 +1,11 @@
 import 'react';
 import './EPortalPage.css';
+import { CiCirclePlus } from "react-icons/ci";
 
 const EmployerPortal = () => {
   return (
     <div className="admin-portal">
-      <section className="welcome-banner">
+      {/* <section className="welcome-banner">
         <h1>Welcome, [Company Name]!</h1>
         <p>Welcome to your employer portal where you can manage your job listings, view applications, and access ATS insights.</p>
       </section>
@@ -83,7 +84,59 @@ const EmployerPortal = () => {
         <button className="action-btn">Post a New Job</button>
         <button className="action-btn">View All Applications</button>
         <button className="action-btn">Manage Jobs</button>
-      </section>
+      </section> */}
+
+      <div className='admin-info-box'>
+        <div className='admin-icon'>
+        </div>
+        <div className='admin-options'>
+          <div className='admin-option-div'>
+            <p className='post-job'>Total</p>
+              <p style={{fontSize:'20px'}}>24</p>
+            <p className='post-job'>Job</p>
+          </div>
+          <div className='admin-option-div'>
+            <p className='post-job'>Post a</p>
+              <CiCirclePlus/>
+            <p className='post-job'>Job</p>
+          </div>
+          <div className='admin-option-div'>
+            <p className='post-job'>Total</p>
+              <p style={{fontSize:'20px'}}>29</p>
+            <p className='post-job'>Applicants</p>
+          </div>
+        </div>
+      </div>
+      <div className='admin-info-box-2'>
+        
+      </div>
+      <div className='admin-info-box-2'>
+        
+      </div>
+      <div className='admin-info-box-3'>
+        <p style={{color:'black', paddingTop:'10px', fontSize:'20px', marginBottom:'5px'}}>
+          Recent Job Post
+        </p>
+        <div className='job-post'>
+          <div style={{
+            display:'flex',
+            width:'100%',
+            justifyContent:'space-between'
+          }}>
+            <h2>
+              Software Research Intern
+            </h2>
+            <h2>
+              Califonia, USA
+            </h2>
+          </div>
+          <p style={{width:'80%'}}>
+            Fantastic opportunity for Developers! The oppurtunity Hub UK id delighted to announce that we are actively seeking
+            motivated individuals to join the dynamic team of a growing retail investment tech
+            company as a Web Developer.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
