@@ -4,6 +4,7 @@ const cors = require("cors");
 
 const candidateRoutes = require("./routes/candidate"); // Import candidate routes
 const employerRoutes = require("./routes/employer"); // Import employer routes
+const jobRoutes = require("./routes/job");
 
 const app = express();
 
@@ -23,6 +24,7 @@ mongoose
 // ✅ Routes
 app.use("/api/candidates", candidateRoutes);
 app.use("/api/employers", employerRoutes);
+app.use("/api/jobs", jobRoutes);
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

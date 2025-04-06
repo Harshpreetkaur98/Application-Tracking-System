@@ -11,6 +11,9 @@
     z-index: 50;
     margin: 10px;
   }
+  .flex{
+    margin-bottom: 0px !important;
+  }
 
   .nav-item{
     display: flex;
@@ -100,4 +103,5 @@
 
 .settings-icon{
   margin: 10px;
+  height: 90%;
 }

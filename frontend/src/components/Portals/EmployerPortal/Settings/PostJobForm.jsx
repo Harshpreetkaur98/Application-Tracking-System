@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios"; // Make sure to install axios if not already installed
 import "./PostJobForm.css";
 
 const PostJobForm = () => {
@@ -16,11 +17,26 @@ const PostJobForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Posting Job:", formData);
-    // You can replace the above line with an API call
-    alert("Job Posted!");
+
+    try {
+      const jobData = {
+        title: formData.title,
+        description: formData.description,
+        skillsRequired: formData.requirements.split(",").map(skill => skill.trim()), // Convert comma separated skills to array
+        location: formData.location,
+        salaryRange: formData.salary,
+      };
+
+      const response = await axios.post("http://localhost:5000/api/jobs/post", jobData);
+
+      // Success: Alert or provide feedback
+      alert("Job Posted: " + response.data.message);
+    } catch (error) {
+      console.error("Error posting job:", error);
+      alert("Failed to post the job. Please try again.");
+    }
   };
 
   return (
