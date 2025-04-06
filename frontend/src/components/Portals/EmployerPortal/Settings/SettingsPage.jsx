@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Settings, User, LogOut, MessageSquare, Briefcase, LayoutDashboard, FileText, PlusCircle, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom"; // For redirection
 import "./SettingsPage.css"; // Import CSS
+import PostJobForm from "./PostJobForm";
 
 const SettingsPage = () => {
   const [activeSection, setActiveSection] = useState(null);
@@ -27,7 +28,7 @@ const SettingsPage = () => {
       case "reports":
         return <div className="content">📑 ATS Reports</div>;
       case "post-job":
-        return <div className="content">📝 Post a New Job</div>;
+        return <PostJobForm />;
       default:
         return <div className="content empty">Select an option from the sidebar.</div>;
     }

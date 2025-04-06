@@ -3,6 +3,8 @@
   display: flex;
   height: 100vh;
   background-color: #f4f4f4;
+  overflow: hidden;
+
 }
 
 /* Sidebar */
@@ -74,6 +76,11 @@
   padding: 20px;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
+  overflow-y: auto; /* Enables scrolling within the main content */
+  max-height: calc(100vh - 40px); /* Adjusts height to ensure no overflow */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .content {
@@ -103,4 +110,26 @@
 
 .help-button:hover {
   background: #2563eb;
+}
+
+
+@media (max-width: 768px) {
+  .settings-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+  }
+
+  .main-content {
+    padding: 20px;
+    width: 100%;
+    max-height: none; /* Remove max-height for smaller screens */
+  }
 }
