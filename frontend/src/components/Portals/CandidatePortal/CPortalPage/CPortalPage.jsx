@@ -1,33 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import './CPortalPage.css';
 
 function CandidateLogin() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const jobs = [
-    {
-      title: 'Software Engineer',
-      company: 'TechCorp',
-      rating: 4.2,
-      location: 'London, UK',
-      salary: '£50K - £60K (Glassdoor est.)',
-      description: 'Join our growing engineering team building scalable platforms for millions of users...',
-    },
-    {
-      title: 'Frontend Developer',
-      company: 'Innovatech',
-      rating: 4.5,
-      location: 'Remote',
-      salary: '£60K - £70K (Glassdoor est.)',
-      description: 'Seeking a frontend developer experienced in React and TypeScript to join our agile team.',
-    },
-    // You can add more jobs here...
-  ];
+  // Fetch jobs from the backend when the component mounts
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/jobs/jobs');
+        setJobs(response.data.jobs); // Assuming the response contains a 'jobs' array
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchJobs();
+  }, []);
+
+  // Filter jobs based on the search term
   const filteredJobs = jobs.filter((job) =>
-    `${job.title} ${job.company} ${job.description}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
+    `${job.title} ${job.description} ${job.location}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -59,23 +57,24 @@ function CandidateLogin() {
         </aside>
 
         <section className="jobs">
-          {filteredJobs.length > 0 ? (
-            filteredJobs.map((job, index) => (
-              <div className="job-card" key={index}>
-                <h3>{job.title}</h3>
-                <p><strong>{job.company}</strong> <span className="rating">{job.rating} ★</span> – {job.location}</p>
-                <p className="salary">{job.salary}</p>
-                <p className="desc">{job.description}</p>
-              </div>
-            ))
-          ) : (
-            <p style={{ padding: '1rem' }}>No jobs match your search.</p>
-          )}
-
-          {filteredJobs.length > 0 && (
-            <button className="load-more">Load More Jobs</button>
-          )}
-        </section>
+            {loading ? (
+              <p>Loading jobs...</p>
+            ) : filteredJobs.length > 0 ? (
+              filteredJobs.map((job, index) => (
+                <div className="job-card" key={index}>
+                  <h3>{job.title}</h3>
+                  <p><strong>Company: hAts</strong> – {job.location}</p>
+                  <p className="salary">Salary: {job.salaryRange || 'competitive'}</p>
+                  <div className="desc">
+                    <h4>Description:</h4>
+                    <p>{job.description || 'No description provided'}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p style={{ padding: '1rem' }}>No jobs match your search.</p>
+            )}
+          </section>
       </main>
     </div>
   );
