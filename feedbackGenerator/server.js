@@ -41,22 +41,29 @@ const extractTextFromPdf = async (pdfPath) => {
   }
 };
 
-// Generate feedback using Gemini API (Updated model)
-const generateFeedback = async (cvText, jobSpec) => {
+// Generate professional rejection email
+const generateRejectionEmail = async (cvText, jobSpec) => {
   try {
-    const prompt = `Analyze this CV against the job specifications and provide detailed feedback:
-    
-    CV (First 2000 chars):
-    ${cvText.slice(0, 2000)}
-    
-    Job Description:
+    const prompt = `You are an HR representative at hAts. Generate a professional rejection email for a candidate based on their CV and our job requirements. Follow these guidelines strictly:
+
+    1. Format as a formal business email
+    2. Start with "Dear candidate,"
+    3. First paragraph should thank them for applying
+    4. Second paragraph should contain 4-5 specific reasons for rejection and each reason should be explained, have this paragraph in atleast 300 words but less than 350 words
+    5. Keep it professional but polite
+    6. End with "Best regards, hAts Team"
+    7. Never use markdown or special formatting
+    8. Keep it under 600 words
+
+   
+     Job Title: ${jobSpec.split('\n')[0] || 'AI Chatbot Coding Trainer'}
+
+    Job Requirements:
     ${jobSpec}
-    
-    Provide:
-    1. Key strengths matching the job
-    2. Missing skills/qualifications
-    3. Potential reasons for rejection
-    4. Suggested improvements`;
+
+    Candidate's CV Excerpt:
+    ${cvText.slice(0, 2000)}
+    Generate the rejection email:`;
 
     const response = await axios.post(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY}`,
@@ -65,136 +72,78 @@ const generateFeedback = async (cvText, jobSpec) => {
           parts: [{ text: prompt }]
         }],
         generationConfig: {
-          temperature: 0.5,  // Controls creativity (0-1)
-          maxOutputTokens: 2000
-        }
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
+          temperature: 0.2,
+          maxOutputTokens: 500
         }
       }
     );
 
-    if (!response.data.candidates?.[0]?.content?.parts?.[0]?.text) {
-      throw new Error('Unexpected API response structure');
+    let emailContent = response.data.candidates[0].content.parts[0].text;
+    // Clean up any residual formatting
+    emailContent = emailContent.replace(/[*#_]/g, '')
+                              .replace(/\n\s*\n/g, '\n\n')
+                              .trim();
+
+    return emailContent;
+  } catch (error) {
+    console.error('API Error:', error.response?.data || error.message);
+    throw new Error('Failed to generate rejection email');
+  }
+};
+
+// Send rejection email
+const sendRejectionEmail = async (to, emailContent) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_APP_PASSWORD
     }
+  });
 
-    return response.data.candidates[0].content.parts[0].text;
-  } catch (error) {
-    console.error('Gemini API Error:', error.response?.data || error.message);
-    throw new Error('Failed to generate feedback. Please try again.');
-  }
+  const mailOptions = {
+    from: `hAts Team <${process.env.EMAIL_USER}>`,
+    to,
+    subject: 'Your Application to hAts',
+    text: emailContent,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; line-height: 1.6;">
+        <p>${emailContent.replace(/\n/g, '<br>')}</p>
+        <br>
+        <img src="https://example.com/hats-logo.png" alt="hAts Logo" width="120">
+      </div>
+    `
+  };
+
+  await transporter.sendMail(mailOptions);
 };
 
-// Send email with improved error handling
-const sendEmail = async (to, feedback) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_APP_PASSWORD  // Use app password, not regular password
-      },
-      tls: {
-        rejectUnauthorized: false  // For local testing only
-      }
-    });
-
-    const mailOptions = {
-      from: `CV Feedback Service <${process.env.EMAIL_USER}>`,
-      to,
-      subject: 'Your Personalized CV Feedback',
-      text: feedback,
-      html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-          <h2 style="color: #2563eb;">CV Feedback Report</h2>
-          <div style="white-space: pre-wrap; background: #f3f4f6; padding: 1rem; border-radius: 0.5rem;">
-            ${feedback.replace(/\n/g, '<br>')}
-          </div>
-          <p style="margin-top: 1rem; color: #6b7280;">
-            This feedback was generated automatically. For questions, reply to this email.
-          </p>
-        </div>
-      `
-    };
-
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error('Email Error:', error);
-    throw new Error('Failed to send email. Please check your email address.');
-  }
-};
-
-// Upload route with enhanced validation
+// Upload route
 app.post('/upload', upload.single('cv'), async (req, res) => {
   try {
-    // Validate file
-    if (!req.file) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'No CV file uploaded' 
-      });
-    }
-
-    // Validate other inputs
-    const { jobSpec, email } = req.body;
-    if (!jobSpec?.trim() || !email?.trim()) {
-      fs.unlinkSync(req.file.path);  // Clean up file
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Job description and email are required' 
-      });
-    }
-
-    // Validate email format
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      fs.unlinkSync(req.file.path);
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid email address' 
-      });
+    // Validate inputs
+    if (!req.file || !req.body.jobSpec?.trim() || !req.body.email?.trim()) {
+      if (req.file) fs.unlinkSync(req.file.path);
+      return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
     // Process request
     const cvText = await extractTextFromPdf(req.file.path);
-    const feedback = await generateFeedback(cvText, jobSpec);
-    await sendEmail(email, feedback);
+    const rejectionEmail = await generateRejectionEmail(cvText, req.body.jobSpec);
+    await sendRejectionEmail(req.body.email, rejectionEmail);
 
-    // Clean up
+    // Cleanup
     fs.unlinkSync(req.file.path);
-
-    res.json({ 
-      success: true, 
-      message: 'Feedback sent successfully! Check your email.' 
-    });
+    res.json({ success: true, message: 'Rejection email sent' });
 
   } catch (error) {
-    // Clean up file if exists
-    if (req.file?.path && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
-
-    console.error('Server Error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: error.message || 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    });
+    if (req.file?.path) fs.unlinkSync(req.file.path);
+    console.error('Error:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Unhandled Error:', err);
-  res.status(500).json({ 
-    success: false, 
-    message: 'An unexpected error occurred' 
-  });
 });
 
 // Start server
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
-  console.log(`Gemini Model: gemini-1.5-pro-latest`);
 });
