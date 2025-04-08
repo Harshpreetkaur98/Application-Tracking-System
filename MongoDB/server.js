@@ -1,7 +1,23 @@
+require('dotenv').config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+const fs = require('fs');
+
+
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Then create resumes directory inside uploads
+const resumesDir = path.join(uploadsDir, 'resumes');
+if (!fs.existsSync(resumesDir)) {
+  fs.mkdirSync(resumesDir, { recursive: true });
+}
+
 
 const candidateRoutes = require("./routes/candidate"); // Import candidate routes
 const employerRoutes = require("./routes/employer"); // Import employer routes

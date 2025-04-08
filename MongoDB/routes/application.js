@@ -4,6 +4,7 @@ const path = require('path');
 const Application = require('../models/application');
 const Job = require('../models/job');
 const mongoose = require('mongoose');
+const { processApplicationFeedback } = require('../services/feedbackService');
 
 const router = express.Router();
 
@@ -47,6 +48,10 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
     });
 
     await newApplication.save();
+
+    // Trigger feedback process in background
+    processApplicationFeedback(newApplication._id)
+      .catch(err => console.error('Error in feedback process:', err));
 
     res.status(201).json({
       message: 'Application submitted successfully',
