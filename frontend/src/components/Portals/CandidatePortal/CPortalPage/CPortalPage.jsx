@@ -67,14 +67,14 @@ function CandidateLogin() {
       formData.append('resume', applicationForm.resume);
       formData.append('coverLetter', applicationForm.coverLetter);
       formData.append('jobId', selectedJob._id);
-
-      await axios.post('http://localhost:5000/api/applications/apply', formData, {
+  
+      const response = await axios.post('http://localhost:5000/api/applications/apply', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-
-      alert('Application submitted successfully!');
+  
+      alert(response.data.message || 'Application submitted successfully!');
       setShowApplyModal(false);
       // Reset form
       setApplicationForm({
@@ -86,7 +86,7 @@ function CandidateLogin() {
       });
     } catch (error) {
       console.error('Error submitting application:', error);
-      alert('Failed to submit application. Please try again.');
+      alert(error.response?.data?.message || 'Failed to submit application. Please try again.');
     }
   };
 

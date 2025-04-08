@@ -1,10 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require("path");
 
 const candidateRoutes = require("./routes/candidate"); // Import candidate routes
 const employerRoutes = require("./routes/employer"); // Import employer routes
 const jobRoutes = require("./routes/job");
+const applicationRoutes = require("./routes/application");
 
 const app = express();
 
@@ -29,6 +31,10 @@ mongoose
 app.use("/api/candidates", candidateRoutes);
 app.use("/api/employers", employerRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/applications", applicationRoutes);
+
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
