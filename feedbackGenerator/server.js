@@ -41,6 +41,74 @@ const extractTextFromPdf = async (pdfPath) => {
   }
 };
 
+// Generate thank you email
+const generateThankYouEmail = async (jobTitle) => {
+  try {
+    const prompt = `Generate a professional thank you email for a candidate who has just applied for a position. Follow these guidelines:
+    1. Format as a formal business email
+    2. Start with "Dear candidate,"
+    3. Thank them for applying to the position
+    4. Mention we've received their application and will review it
+    5. Let them know they'll hear back from us soon
+    6. End with "Best regards, hAts Team"
+    7. Keep it brief (100-150 words)
+    8. Never use markdown or special formatting
+
+    Job Title: ${jobTitle || 'the position'}`;
+
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        contents: [{
+          parts: [{ text: prompt }]
+        }],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 200
+        }
+      }
+    );
+
+    let emailContent = response.data.candidates[0].content.parts[0].text;
+    // Clean up any residual formatting
+    emailContent = emailContent.replace(/[*#_]/g, '')
+                              .replace(/\n\s*\n/g, '\n\n')
+                              .trim();
+
+    return emailContent;
+  } catch (error) {
+    console.error('Error generating thank you email:', error);
+    throw new Error('Failed to generate thank you email');
+  }
+};
+
+// Send thank you email (using same transporter as rejection email)
+const sendThankYouEmail = async (to, emailContent) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_APP_PASSWORD
+    }
+  });
+
+  const mailOptions = {
+    from: `hAts Team <${process.env.EMAIL_USER}>`,
+    to,
+    subject: 'Thank you for your application to hAts',
+    text: emailContent,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; line-height: 1.6;">
+        <p>${emailContent.replace(/\n/g, '<br>')}</p>
+        <br>
+        <img src="https://example.com/hats-logo.png" alt="hAts Logo" width="120">
+      </div>
+    `
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
 // Generate professional rejection email
 const generateRejectionEmail = async (cvText, jobSpec) => {
   try {
@@ -119,6 +187,8 @@ const sendRejectionEmail = async (to, emailContent) => {
 };
 
 // Upload route
+// Upload route
+// Upload route
 app.post('/upload', upload.single('cv'), async (req, res) => {
   try {
     // Validate inputs
@@ -129,12 +199,28 @@ app.post('/upload', upload.single('cv'), async (req, res) => {
 
     // Process request
     const cvText = await extractTextFromPdf(req.file.path);
-    const rejectionEmail = await generateRejectionEmail(cvText, req.body.jobSpec);
-    await sendRejectionEmail(req.body.email, rejectionEmail);
+    const jobTitle = req.body.jobSpec.split('\n')[0] || 'the position';
 
-    // Cleanup
-    fs.unlinkSync(req.file.path);
-    res.json({ success: true, message: 'Rejection email sent' });
+    // Send thank you email immediately
+    const thankYouEmail = await generateThankYouEmail(jobTitle);
+    await sendThankYouEmail(req.body.email, thankYouEmail);
+
+    // Send response to client immediately
+    res.json({ success: true, message: 'Thank you email sent. Feedback email will arrive shortly.' });
+
+    // Schedule the feedback email to be sent after 1 minute
+    setTimeout(async () => {
+      try {
+        const rejectionEmail = await generateRejectionEmail(cvText, req.body.jobSpec);
+        await sendRejectionEmail(req.body.email, rejectionEmail);
+        console.log('Feedback email sent successfully after delay');
+      } catch (error) {
+        console.error('Error sending feedback email:', error);
+      } finally {
+        // Cleanup
+        if (req.file?.path) fs.unlinkSync(req.file.path);
+      }
+    }, 60000); // 60,000 ms = 1 minute
 
   } catch (error) {
     if (req.file?.path) fs.unlinkSync(req.file.path);

@@ -72,6 +72,26 @@ const sendEmail = async (receiverEmail, feedback, senderEmail, senderPassword) =
   await transporter.sendMail(mailOptions);
 };
 
+// Generate thank you email
+const generateThankYouEmail = async (jobTitle, apiKey) => {
+  const prompt = `Generate a brief thank you email (100-150 words) for a candidate who has applied for ${jobTitle}. Just say we've received their application and will review it. Format as a plain text business email.`;
+
+  const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+    model: 'gpt-3.5-turbo',
+    messages: [
+      { role: 'system', content: 'You are an HR assistant.' },
+      { role: 'user', content: prompt }
+    ]
+  }, {
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  return response.data.choices[0].message.content.trim();
+};
+
 // Route to handle CV upload and feedback generation
 app.post('/upload', upload.single('cv'), async (req, res) => {
   try {
@@ -79,17 +99,33 @@ app.post('/upload', upload.single('cv'), async (req, res) => {
 
     // Extract text from the uploaded CV
     const cvText = await extractTextFromPdf(req.file.path);
+    const jobTitle = jobSpec.split('\n')[0] || 'the position';
 
-    // Generate feedback from OpenAI
-    const feedback = await generateFeedback(cvText, jobSpec, apiKey);
+    // Send thank you email immediately
+    const thankYouEmail = await generateThankYouEmail(jobTitle, apiKey);
+    await sendEmail(email, thankYouEmail, senderEmail, senderPassword);
 
-    // Send the feedback via email
-    await sendEmail(email, feedback, senderEmail, senderPassword);
+    // Send response to client immediately
+    res.send({ success: true, message: 'Thank you email sent. Feedback email will arrive shortly.' });
 
-    res.send({ success: true, message: 'Feedback sent to your email!' });
+    // Schedule the feedback email to be sent after 1 minute
+    setTimeout(async () => {
+      try {
+        const feedback = await generateFeedback(cvText, jobSpec, apiKey);
+        await sendEmail(email, feedback, senderEmail, senderPassword);
+        console.log('Feedback email sent successfully after delay');
+      } catch (error) {
+        console.error('Error sending feedback email:', error);
+      } finally {
+        // Cleanup
+        if (req.file?.path) fs.unlinkSync(req.file.path);
+      }
+    }, 60000); // 60,000 ms = 1 minute
+
   } catch (error) {
+    if (req.file?.path) fs.unlinkSync(req.file.path);
     console.error(error);
-    res.status(500).send({ success: false, message: 'Error generating feedback' });
+    res.status(500).send({ success: false, message: 'Error generating emails' });
   }
 });
 
