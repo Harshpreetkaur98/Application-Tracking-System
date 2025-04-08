@@ -6,6 +6,15 @@ function CandidateLogin() {
   const [searchTerm, setSearchTerm] = useState('');
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [applicationForm, setApplicationForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    resume: null,
+    coverLetter: ''
+  });
 
   // Fetch jobs from the backend when the component mounts
   useEffect(() => {
@@ -27,6 +36,59 @@ function CandidateLogin() {
   const filteredJobs = jobs.filter((job) =>
     `${job.title} ${job.description} ${job.location}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleApplyClick = (job) => {
+    setSelectedJob(job);
+    setShowApplyModal(true);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setApplicationForm({
+      ...applicationForm,
+      [name]: value
+    });
+  };
+
+  const handleFileChange = (e) => {
+    setApplicationForm({
+      ...applicationForm,
+      resume: e.target.files[0]
+    });
+  };
+
+  const handleSubmitApplication = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append('name', applicationForm.name);
+      formData.append('email', applicationForm.email);
+      formData.append('phone', applicationForm.phone);
+      formData.append('resume', applicationForm.resume);
+      formData.append('coverLetter', applicationForm.coverLetter);
+      formData.append('jobId', selectedJob._id);
+
+      await axios.post('http://localhost:5000/api/applications/apply', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      alert('Application submitted successfully!');
+      setShowApplyModal(false);
+      // Reset form
+      setApplicationForm({
+        name: '',
+        email: '',
+        phone: '',
+        resume: null,
+        coverLetter: ''
+      });
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      alert('Failed to submit application. Please try again.');
+    }
+  };
 
   return (
     <div>
@@ -69,6 +131,12 @@ function CandidateLogin() {
                     <h4>Description:</h4>
                     <p>{job.description || 'No description provided'}</p>
                   </div>
+                  <button 
+                    className="apply-button"
+                    onClick={() => handleApplyClick(job)}
+                  >
+                    Apply Now
+                  </button>
                 </div>
               ))
             ) : (
@@ -76,6 +144,74 @@ function CandidateLogin() {
             )}
           </section>
       </main>
+
+      {/* Application Modal */}
+      {showApplyModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <button 
+              className="close-button"
+              onClick={() => setShowApplyModal(false)}
+            >
+              &times;
+            </button>
+            <h2>Apply for {selectedJob?.title}</h2>
+            <form onSubmit={handleSubmitApplication}>
+              <div className="form-group">
+                <label>Full Name:</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={applicationForm.name}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Email:</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={applicationForm.email}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Phone Number:</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={applicationForm.phone}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Resume (PDF):</label>
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleFileChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Cover Letter:</label>
+                <textarea
+                  name="coverLetter"
+                  value={applicationForm.coverLetter}
+                  onChange={handleInputChange}
+                  rows="5"
+                />
+              </div>
+              <button type="submit" className="submit-application">
+                Submit Application
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
