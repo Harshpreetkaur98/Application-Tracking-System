@@ -1,0 +1,14 @@
+1. Update the apply page so that it does not ask for email but only name.
+2. if teh cover letter is included then teh cover letter should be taken in consideration for the rejection.
+3. see teh candidates if they should be rejected or accepted.
+4. Make a pdf report for the employer of the candidates that are selected and accepted
+5. connect the your activity with the database.
+6. connect the profile with the candidate colleciton in teh database
+7. Fix the candidate portal job elment so that it shows "...more" for longer job specs
+8. fix the UI of the website.
+9. implement the feedback generator with the "Scan your CV" element but chnage the prompt to more of a paragraph format and that provides the user with a longer feedbakc on their CV.
+10. Fix the employer portal page
+11. Fix the logo as it is not visible even right now
+12. Change the prompt in the main file ot the one in the feedback generator
+13. Implemen the side bar in teh candidate protal with the jobs shown.
+14. Change CV at the main page from .pdf to .docx
