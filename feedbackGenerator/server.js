@@ -7,21 +7,28 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const pdfParse = require('pdf-parse');
 
+// Serve static images
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware
+// Serve static images (from the "images" folder)
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+// Middleware to serve static files and handle JSON requests
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // File upload setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    if (!fs.existsSync('uploads')) {
-      fs.mkdirSync('uploads');
-    }
-    cb(null, 'uploads/');
+    cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
@@ -44,6 +51,10 @@ const extractTextFromPdf = async (pdfPath) => {
 // Generate thank you email
 const generateThankYouEmail = async (jobTitle) => {
   try {
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error('Gemini API key is missing');
+    }
+
     const prompt = `Generate a professional thank you email for a candidate who has just applied for a position. Follow these guidelines:
     1. Format as a formal business email
     2. Start with "Dear candidate,"
@@ -66,72 +77,56 @@ const generateThankYouEmail = async (jobTitle) => {
           temperature: 0.2,
           maxOutputTokens: 200
         }
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }
     );
 
     let emailContent = response.data.candidates[0].content.parts[0].text;
-    // Clean up any residual formatting
-    emailContent = emailContent.replace(/[*#_]/g, '')
-                              .replace(/\n\s*\n/g, '\n\n')
-                              .trim();
-
-    return emailContent;
+    return emailContent.replace(/[*#_]/g, '')
+                      .replace(/\n\s*\n/g, '\n\n')
+                      .trim();
   } catch (error) {
-    console.error('Error generating thank you email:', error);
+    console.error('Error generating thank you email:', error.response?.data || error.message);
     throw new Error('Failed to generate thank you email');
   }
-};
-
-// Send thank you email (using same transporter as rejection email)
-const sendThankYouEmail = async (to, emailContent) => {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_APP_PASSWORD
-    }
-  });
-
-  const mailOptions = {
-    from: `hAts Team <${process.env.EMAIL_USER}>`,
-    to,
-    subject: 'Thank you for your application to hAts',
-    text: emailContent,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; line-height: 1.6;">
-        <p>${emailContent.replace(/\n/g, '<br>')}</p>
-        <br>
-        <img src="https://example.com/hats-logo.png" alt="hAts Logo" width="120">
-      </div>
-    `
-  };
-
-  await transporter.sendMail(mailOptions);
 };
 
 // Generate professional rejection email
 const generateRejectionEmail = async (cvText, jobSpec) => {
   try {
-    const prompt = `You are an HR representative at hAts. Generate a professional rejection email for a candidate based on their CV and our job requirements. Follow these guidelines strictly:
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error('Gemini API key is missing');
+    }
 
-    1. Format as a formal business email
-    2. Start with "Dear candidate,"
-    3. First paragraph should thank them for applying
-    4. Second paragraph should contain 4-5 specific reasons for rejection and each reason should be explained, have this paragraph in atleast 300 words but less than 350 words
-    5. Keep it professional but polite
-    6. End with "Best regards, hAts Team"
-    7. Never use markdown or special formatting
-    8. Keep it under 600 words
+    const jobTitle = jobSpec.split('\n')[0] || 'the position';
+    
+    const prompt = `Act as an HR specialist crafting constructive rejection feedback. Generate a polite but concise email with this structure:
 
-   
-     Job Title: ${jobSpec.split('\n')[0] || 'AI Chatbot Coding Trainer'}
-
-    Job Requirements:
-    ${jobSpec}
-
-    Candidate's CV Excerpt:
-    ${cvText.slice(0, 2000)}
-    Generate the rejection email:`;
+    1. OPENING: "Dear [Candidate's Name],"
+    2. APPRECIATION: 1 sentence thanking them for applying to ${jobTitle} at hAts
+    3. DECISION: "After careful review, we've decided to move forward with other candidates."
+    4. KEY FEEDBACK: Present 2-3 specific areas for improvement in bullet format:
+       - Focus on skills mentioned in: ${jobSpec}
+       - Compare with candidate's experience: ${cvText.substring(0, 1000)}
+    5. ENCOURAGEMENT: 1 positive note about their application
+    6. CLOSING: "We wish you success in your job search and hope you apply again!"
+    
+    Tone: Professional yet warm  
+    Format: HTML  
+    Word limit: 150 max  
+    Do not include 'Best regards' in the main content.
+    
+    Append this HTML footer (with logo):
+    
+    <div style="font-family: Arial, sans-serif; max-width: 600px; line-height: 1.6;">
+      <p>Best regards,<br>The hAts Team</p>
+      <img src="http://localhost:5000/images/logo.png" alt="hAts Logo" style="height:40px; margin-top: 20px;" />
+    </div>
+    `;
 
     const response = await axios.post(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY}`,
@@ -143,51 +138,33 @@ const generateRejectionEmail = async (cvText, jobSpec) => {
           temperature: 0.2,
           maxOutputTokens: 500
         }
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }
     );
 
     let emailContent = response.data.candidates[0].content.parts[0].text;
-    // Clean up any residual formatting
-    emailContent = emailContent.replace(/[*#_]/g, '')
-                              .replace(/\n\s*\n/g, '\n\n')
-                              .trim();
-
-    return emailContent;
+    return emailContent.replace(/[*#_]/g, '')
+                      .replace(/\n\s*\n/g, '\n\n')
+                      .trim();
   } catch (error) {
-    console.error('API Error:', error.response?.data || error.message);
+    console.error('Error generating rejection email:', error.response?.data || error.message);
     throw new Error('Failed to generate rejection email');
   }
 };
 
-// Send rejection email
-const sendRejectionEmail = async (to, emailContent) => {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_APP_PASSWORD
-    }
-  });
+// Email transporter (shared for both emails)
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_APP_PASSWORD
+  }
+});
 
-  const mailOptions = {
-    from: `hAts Team <${process.env.EMAIL_USER}>`,
-    to,
-    subject: 'Your Application to hAts',
-    text: emailContent,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; line-height: 1.6;">
-        <p>${emailContent.replace(/\n/g, '<br>')}</p>
-        <br>
-        <img src="https://example.com/hats-logo.png" alt="hAts Logo" width="120">
-      </div>
-    `
-  };
-
-  await transporter.sendMail(mailOptions);
-};
-
-// Upload route
-// Upload route
 // Upload route
 app.post('/upload', upload.single('cv'), async (req, res) => {
   try {
@@ -203,24 +180,38 @@ app.post('/upload', upload.single('cv'), async (req, res) => {
 
     // Send thank you email immediately
     const thankYouEmail = await generateThankYouEmail(jobTitle);
-    await sendThankYouEmail(req.body.email, thankYouEmail);
+    await transporter.sendMail({
+      from: `hAts Team <${process.env.EMAIL_USER}>`,
+      to: req.body.email,
+      subject: 'Thank you for your application to hAts',
+      text: thankYouEmail,
+      html: `<div style="font-family: Arial, sans-serif; max-width: 600px; line-height: 1.6;">
+              <p>${thankYouEmail.replace(/\n/g, '<br>')}</p>
+            </div>`
+    });
 
-    // Send response to client immediately
+    // Send response to client
     res.json({ success: true, message: 'Thank you email sent. Feedback email will arrive shortly.' });
 
-    // Schedule the feedback email to be sent after 1 minute
+    // Schedule feedback email
     setTimeout(async () => {
       try {
         const rejectionEmail = await generateRejectionEmail(cvText, req.body.jobSpec);
-        await sendRejectionEmail(req.body.email, rejectionEmail);
-        console.log('Feedback email sent successfully after delay');
+        await transporter.sendMail({
+          from: `hAts Team <${process.env.EMAIL_USER}>`,
+          to: req.body.email,
+          subject: 'Your Application Feedback from hAts',
+          text: rejectionEmail,
+          html: `<div style="font-family: Arial, sans-serif; max-width: 600px; line-height: 1.6;">
+                  <p>${rejectionEmail.replace(/\n/g, '<br>')}</p>
+                </div>`
+        });
       } catch (error) {
         console.error('Error sending feedback email:', error);
       } finally {
-        // Cleanup
         if (req.file?.path) fs.unlinkSync(req.file.path);
       }
-    }, 60000); // 60,000 ms = 1 minute
+    }, 60000);
 
   } catch (error) {
     if (req.file?.path) fs.unlinkSync(req.file.path);
