@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './CPortalPage.css';
 
-function CandidateLogin() {
+function CandidatePortal() {
   const [searchTerm, setSearchTerm] = useState('');
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [applicationStatus, setApplicationStatus] = useState(null);
   const [applicationForm, setApplicationForm] = useState({
     name: '',
     email: '',
@@ -21,16 +22,38 @@ function CandidateLogin() {
     const fetchJobs = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/jobs/jobs');
-        setJobs(response.data.jobs); // Assuming the response contains a 'jobs' array
+        setJobs(response.data.jobs);
       } catch (error) {
         console.error('Error fetching jobs:', error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchJobs();
   }, []);
+
+  // Check application status when job or email changes
+  useEffect(() => {
+    const checkApplicationStatus = async () => {
+      if (selectedJob && applicationForm.email) {
+        try {
+          const response = await axios.get(
+            `http://localhost:5000/api/applications/status`, 
+            {
+              params: {
+                jobId: selectedJob._id,
+                email: applicationForm.email
+              }
+            }
+          );
+          setApplicationStatus(response.data);
+        } catch (error) {
+          console.error('Error checking application status:', error);
+        }
+      }
+    };
+    checkApplicationStatus();
+  }, [selectedJob, applicationForm.email]);
 
   // Filter jobs based on the search term
   const filteredJobs = jobs.filter((job) =>
@@ -40,6 +63,7 @@ function CandidateLogin() {
   const handleApplyClick = (job) => {
     setSelectedJob(job);
     setShowApplyModal(true);
+    setApplicationStatus(null); // Reset status when applying to new job
   };
 
   const handleInputChange = (e) => {
@@ -67,15 +91,20 @@ function CandidateLogin() {
       formData.append('resume', applicationForm.resume);
       formData.append('coverLetter', applicationForm.coverLetter);
       formData.append('jobId', selectedJob._id);
-  
-      const response = await axios.post('http://localhost:5000/api/applications/apply', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+
+      const response = await axios.post(
+        'http://localhost:5000/api/applications/apply', 
+        formData, 
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         }
-      });
-  
+      );
+
       alert(response.data.message || 'Application submitted successfully!');
       setShowApplyModal(false);
+      
       // Reset form
       setApplicationForm({
         name: '',
@@ -84,14 +113,34 @@ function CandidateLogin() {
         resume: null,
         coverLetter: ''
       });
+
+      // Set temporary status
+      setApplicationStatus({
+        status: 'Under Review',
+        message: 'Your application is being processed. You will receive an update soon.'
+      });
+
     } catch (error) {
       console.error('Error submitting application:', error);
       alert(error.response?.data?.message || 'Failed to submit application. Please try again.');
     }
   };
 
+  const getStatusBadge = (status) => {
+    switch(status) {
+      case 'Selected':
+        return <span className="status-badge success">Selected ✓</span>;
+      case 'Rejected':
+        return <span className="status-badge error">Rejected ✗</span>;
+      case 'Under Review':
+        return <span className="status-badge warning">Under Review</span>;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div>
+    <div className="candidate-portal">
       <div className="search-header">
         <input
           type="text"
@@ -119,30 +168,30 @@ function CandidateLogin() {
         </aside>
 
         <section className="jobs">
-            {loading ? (
-              <p>Loading jobs...</p>
-            ) : filteredJobs.length > 0 ? (
-              filteredJobs.map((job, index) => (
-                <div className="job-card" key={index}>
-                  <h3>{job.title}</h3>
-                  <p><strong>Company: hAts</strong> – {job.location}</p>
-                  <p className="salary">Salary: {job.salaryRange || 'competitive'}</p>
-                  <div className="desc">
-                    <h4>Description:</h4>
-                    <p>{job.description || 'No description provided'}</p>
-                  </div>
-                  <button 
-                    className="apply-button"
-                    onClick={() => handleApplyClick(job)}
-                  >
-                    Apply Now
-                  </button>
+          {loading ? (
+            <p>Loading jobs...</p>
+          ) : filteredJobs.length > 0 ? (
+            filteredJobs.map((job, index) => (
+              <div className="job-card" key={index}>
+                <h3>{job.title}</h3>
+                <p><strong>Company: hAts</strong> – {job.location}</p>
+                <p className="salary">Salary: {job.salaryRange || 'competitive'}</p>
+                <div className="desc">
+                  <h4>Description:</h4>
+                  <p>{job.description || 'No description provided'}</p>
                 </div>
-              ))
-            ) : (
-              <p style={{ padding: '1rem' }}>No jobs match your search.</p>
-            )}
-          </section>
+                <button 
+                  className="apply-button"
+                  onClick={() => handleApplyClick(job)}
+                >
+                  Apply Now
+                </button>
+              </div>
+            ))
+          ) : (
+            <p style={{ padding: '1rem' }}>No jobs match your search.</p>
+          )}
+        </section>
       </main>
 
       {/* Application Modal */}
@@ -156,6 +205,20 @@ function CandidateLogin() {
               &times;
             </button>
             <h2>Apply for {selectedJob?.title}</h2>
+            
+            {applicationStatus && (
+              <div className={`application-status ${applicationStatus.status.toLowerCase().replace(' ', '-')}`}>
+                {getStatusBadge(applicationStatus.status)}
+                <p>{applicationStatus.message}</p>
+                {applicationStatus.feedback && (
+                  <div className="feedback-details">
+                    <h4>Feedback:</h4>
+                    <p>{applicationStatus.feedback}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             <form onSubmit={handleSubmitApplication}>
               <div className="form-group">
                 <label>Full Name:</label>
@@ -216,4 +279,4 @@ function CandidateLogin() {
   );
 }
 
-export default CandidateLogin;
+export default CandidatePortal;

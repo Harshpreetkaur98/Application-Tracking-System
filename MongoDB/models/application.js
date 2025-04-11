@@ -28,7 +28,11 @@ const applicationSchema = new mongoose.Schema({
   status: { 
     type: String, 
     default: 'Applied', 
-    enum: ['Applied', 'Reviewed', 'Interview', 'Rejected', 'Hired'] 
+    enum: ['Applied', 'Reviewed', 'Interview', 'Rejected', 'Selected', 'Hired'] 
+  },
+  atsScore: {
+    type: Number,
+    default: 0
   },
   appliedAt: { 
     type: Date, 
@@ -38,7 +42,7 @@ const applicationSchema = new mongoose.Schema({
     type: String,
     default: ''
   }
-});
+}, { timestamps: true });
 
 const Application = mongoose.model('Application', applicationSchema);
 

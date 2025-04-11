@@ -68,6 +68,58 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
   }
 });
 
+// Add this new route to get top candidates
+router.get('/job/:jobId/top', async (req, res) => {
+  try {
+    const applications = await Application.find({ jobId: req.params.jobId })
+      .sort({ atsScore: -1 })
+      .limit(5)
+      .populate('jobId', 'title');
+    
+    res.status(200).json({ applications });
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching top applications', error: err.message });
+  }
+});
+
+// Add this new route
+router.get('/status', async (req, res) => {
+  try {
+    const { jobId, email } = req.query;
+    
+    if (!jobId || !email) {
+      return res.status(400).json({ message: 'jobId and email are required' });
+    }
+
+    const application = await Application.findOne({ 
+      jobId, 
+      candidateEmail: email 
+    }).select('status feedback atsScore');
+
+    if (!application) {
+      return res.status(404).json({ 
+        status: 'Not Applied',
+        message: 'No application found for this job and email'
+      });
+    }
+
+    res.status(200).json({
+      status: application.status,
+      message: `Your application is currently ${application.status}`,
+      feedback: application.feedback,
+      score: application.atsScore
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Error checking application status', error: err.message });
+  }
+});
+
+// Add this route for downloading resumes
+router.get('/resume/:filename', (req, res) => {
+  const file = path.join(__dirname, '../../uploads/resumes', req.params.filename);
+  res.download(file);
+});
+
 // Get all applications for a job (for employers)
 router.get('/job/:jobId', async (req, res) => {
   try {

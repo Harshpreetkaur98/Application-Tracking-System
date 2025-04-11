@@ -146,3 +146,65 @@ body {
 .submit-application:hover {
   background-color: #0b7dda;
 }
+
+/* Add these new styles */
+.application-status {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  background: #f8f9fa;
+  border-left: 4px solid #6c757d;
+}
+
+.application-status.under-review {
+  border-left-color: #ffc107;
+  background: #fff3cd;
+}
+
+.application-status.selected {
+  border-left-color: #28a745;
+  background: #d4edda;
+}
+
+.application-status.rejected {
+  border-left-color: #dc3545;
+  background: #f8d7da;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.status-badge.success {
+  background: #28a745;
+  color: white;
+}
+
+.status-badge.error {
+  background: #dc3545;
+  color: white;
+}
+
+.status-badge.warning {
+  background: #ffc107;
+  color: #212529;
+}
+
+.feedback-details {
+  margin-top: 10px;
+  padding: 10px;
+  background: white;
+  border-radius: 4px;
+}
+
+.feedback-details h4 {
+  margin-bottom: 5px;
+  font-size: 1em;
+}
+
+/* Rest of your existing CSS remains the same */
