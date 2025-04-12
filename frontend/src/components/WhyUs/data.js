@@ -1,13 +1,52 @@
 const data = [
-    { id: 1, title: "Personalised Rejection Feedback."},
-    { id: 2, title: "Phrase by Phrase Application Updates"},
-    { id: 3, title: "AI Powered Resume Insights"},
-    { id: 4, title: "Transparent Hiring Process"},
-  ];
-  
-  export default data;
-      
+  { 
+    id: 1, 
+    title: "Personalised Rejection Feedback",
+    description: "Receive detailed, constructive feedback on why your application wasn't selected, helping you improve for future opportunities.",
+    image: "/api/placeholder/400/300",
+    features: [
+      "Specific feedback on resume gaps",
+      "Skill improvement suggestions",
+      "Personalized recommendations based on job requirements",
+      "Actionable insights from hiring managers"
+    ]
+  },
+  { 
+    id: 2, 
+    title: "Phrase by Phrase Application Updates",
+    description: "Stay informed throughout every stage of the application process with transparent, real-time updates on your application status.",
+    image: "/api/placeholder/400/300",
+    features: [
+      "Real-time status tracking",
+      "Detailed stage-by-stage updates",
+      "Timeline estimates for each phase",
+      "Notification preferences customization"
+    ]
+  },
+  { 
+    id: 3, 
+    title: "AI Powered Resume Insights",
+    description: "Our advanced AI analyzes your resume against job requirements, offering tailored suggestions to highlight your strengths and improve your chances.",
+    image: "/api/placeholder/400/300", 
+    features: [
+      "Keyword optimization for ATS systems",
+      "Skills gap analysis for targeted positions",
+      "Industry-specific formatting recommendations",
+      "Comparative analysis with successful applicants"
+    ]
+  },
+  { 
+    id: 4, 
+    title: "Transparent Hiring Process",
+    description: "We bridge the gap between applicants and employers by providing full visibility into the hiring process, eliminating the typical black box experience.",
+    image: "/api/placeholder/400/300",
+    features: [
+      "Clear hiring timeline visualization",
+      "Defined evaluation criteria for each role",
+      "Feedback loops throughout the process",
+      "Direct communication channels with hiring teams"
+    ]
+  },
+];
 
-//  Phrasley feedback mechanism
-//  Get Feedback on why you were rejected.
-// 
+export default data;
