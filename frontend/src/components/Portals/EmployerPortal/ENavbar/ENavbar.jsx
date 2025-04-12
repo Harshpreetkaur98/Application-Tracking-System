@@ -59,12 +59,8 @@ const EmployerNavbar = () => {
 };
 
 const menuItems = [
-  { path: "/Employer-Portal/dashboard", label: "Dashboard" },
-  { path: "/Employer-Portal/post-job", label: "Post a Job" },
-  { path: "/Employer-Portal/manage-jobs", label: "Manage Jobs" },
-  { path: "/Employer-Portal/applications", label: "Applications" },
-  { path: "/Employer-Portal/feedback-ats", label: "ATS Reports" },
-  { path: "/Employer-Portal/company-profile", label: "Profile" },
+  { path: "/", label: "Home" },
+  { path: "/Employer-Portal", label: "Dashboard" },
   { path: "/Employer-Portal/settings", label: "Settings" },
 ];
 

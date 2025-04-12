@@ -32,6 +32,11 @@ function CNavbar() {
     navigate("/Candidate-Portal/profile");
   };
 
+  const handleHomePage = () => {
+    console.log("Navigating to Profile Page...");
+    navigate("/");
+  };
+
   return (
     <header className="navbar-candidate">
       <div className="logo-container-candidate" onClick={handleClickLogo} style={{ cursor: "pointer" }}>
@@ -58,6 +63,7 @@ function CNavbar() {
         {/* Dropdown Menu */}
         {dropdownVisible && (
           <div className="dropdown-menu">
+            <button onClick={handleHomePage}>Home</button>
             <button onClick={handleProfilePage}>Profile</button>
             <button onClick={handleActivityPage}>Your Activity</button>
             <button onClick={handleLogout}>Logout</button>
