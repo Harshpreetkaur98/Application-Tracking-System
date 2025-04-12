@@ -59,7 +59,6 @@ const Login = () => {
       <h1 className="login-title">Welcome Back!</h1>
       <div className="login-boxes">
         <div className="login-box">
-          <h2>Login</h2>
           <form onSubmit={handleLogin}>
             <label>Email</label>
             <input
@@ -85,9 +84,7 @@ const Login = () => {
             {error && <p style={{ color: "red" }}>{error}</p>}
 
             <div className="login-options">
-              <label>
-                <input type="checkbox" /> Remember Me
-              </label>
+              
               <a href="/forgot-password" className="forgot-password">
                 Forgot Password?
               </a>
