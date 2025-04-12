@@ -1,0 +1,333 @@
+/* Main container styles */
+.how-to-use-container {
+    width: 100%;
+    min-height: 100vh;
+    color: #333;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  
+  /* Hero section styles */
+  .guide-hero {
+    background: linear-gradient(to right, #000000, #434343);
+    color: white;
+    padding: 80px 0 60px;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .guide-hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .guide-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
+  
+  .guide-hero p {
+    font-size: 1.25rem;
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+  
+  /* Introduction section */
+  .guide-intro {
+    padding: 60px 20px;
+    display: flex;
+    justify-content: center;
+    background-color: #f8f9fa;
+  }
+  
+  .intro-card {
+    max-width: 800px;
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .intro-card h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #000;
+  }
+  
+  .intro-card p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 30px;
+    color: #555;
+  }
+  
+  .intro-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .intro-button {
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .intro-button.primary {
+    background-color: black;
+    color: white;
+    border: none;
+  }
+  
+  .intro-button.primary:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+  }
+  
+  .intro-button.secondary {
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+  }
+  
+  .intro-button.secondary:hover {
+    background-color: #f8f8f8;
+    transform: translateY(-2px);
+  }
+  
+  /* Guide content section */
+  .guide-content {
+    padding: 60px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* Guide section styles */
+  .guide-section {
+    display: flex;
+    margin-bottom: 80px;
+    align-items: center;
+    gap: 60px;
+  }
+  
+  .guide-section.reversed {
+    flex-direction: row-reverse;
+  }
+  
+  .guide-section-image {
+    flex: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  .guide-section-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+  
+  .guide-section-image:hover img {
+    transform: scale(1.03);
+  }
+  
+  .guide-section-content {
+    flex: 1;
+  }
+  
+  .guide-section h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #000;
+    position: relative;
+    padding-bottom: 15px;
+  }
+  
+  .guide-section h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: #000;
+  }
+  
+  .section-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    color: #444;
+  }
+  
+  .section-steps, .section-tips {
+    margin-top: 25px;
+  }
+  
+  .section-steps h3, .section-tips h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #000;
+  }
+  
+  .section-steps ol, .section-tips ul {
+    padding-left: 25px;
+  }
+  
+  .section-steps ol li, .section-tips ul li {
+    margin-bottom: 12px;
+    line-height: 1.5;
+    color: #555;
+  }
+  
+  .section-tips ul li {
+    list-style-type: none;
+    position: relative;
+    padding-left: 5px;
+  }
+  
+  .section-tips ul li:before {
+    content: '✓';
+    color: #000;
+    position: absolute;
+    left: -20px;
+    font-weight: bold;
+  }
+  
+  /* FAQ section */
+  .guide-faq {
+    background-color: #f8f9fa;
+    padding: 80px 20px;
+    text-align: center;
+  }
+  
+  .guide-faq h2 {
+    font-size: 2.5rem;
+    margin-bottom: 50px;
+    color: #000;
+  }
+  
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .faq-item {
+    background-color: white;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: left;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .faq-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .faq-item h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: #000;
+  }
+  
+  .faq-item p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #555;
+  }
+  
+  /* CTA section */
+  .guide-cta {
+    background: linear-gradient(to right, #000000, #434343);
+    color: white;
+    text-align: center;
+    padding: 80px 20px;
+  }
+  
+  .guide-cta h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .guide-cta p {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .cta-button {
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 1024px) {
+    .guide-section {
+      gap: 40px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .guide-section,
+    .guide-section.reversed {
+      flex-direction: column;
+      gap: 30px;
+    }
+    
+    .guide-hero h1 {
+      font-size: 2.5rem;
+    }
+    
+    .faq-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .intro-card {
+      padding: 30px 20px;
+    }
+    
+    .guide-hero,
+    .guide-cta {
+      padding: 60px 20px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .guide-hero h1 {
+      font-size: 2rem;
+    }
+    
+    .intro-buttons {
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .cta-button {
+      padding: 12px 30px;
+    }
+  }

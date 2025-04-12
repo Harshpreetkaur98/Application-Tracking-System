@@ -46,11 +46,16 @@ const Navbar = () => {
     navigate("/SignUp");
   };
 
+  const handleClickHowToUse = () => {
+    navigate("/how-to-use");
+  };
+
   return (
     <header className="header">
       <nav className="navbar">
         <ul className="navbar-menu">
           <li className="menu-item" onClick={handleClickWhyUs}>Why us?</li>
+          <li className="menu-item" onClick={handleClickHowToUse}>How to Use</li>
         </ul>
         <div className="navbar-buttons">
           <button className="login-button" onClick={handleClickLogin}>Login</button>

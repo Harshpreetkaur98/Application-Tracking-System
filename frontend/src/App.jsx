@@ -6,6 +6,7 @@ import EmployerApp from "./components/Portals/EmployerPortal/EmployerApp";
 import CandidateApp from "./components/Portals/CandidatePortal/CandidateApp";
 import SignUp from "./components/SignUp/SignUp";
 import Footer from "./components/Footer/Footer";
+import HowToUse from "./components/HowToUse/HowToUse";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/ScanCV" element={<ScanCvPage />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/SignUp" element={<SignUp />} />
+        <Route path="/how-to-use" element={<HowToUse />} />
         <Route path="/Employer-Portal/*" element={<EmployerApp />} />
         <Route path="/Candidate-Portal/*" element={<CandidateApp />} />
       </Routes>
