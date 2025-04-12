@@ -3,17 +3,29 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../api/api";  // Import the loginUser function
 import "./Login.css";
 import Navbar from "../Navbar/Navbar";
+import Captcha from "../Captcha/Captcha";
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
+
+  const handleCaptchaVerify = (status) => {
+    setIsCaptchaVerified(status);
+  };
 
   // Login function
   const handleLogin = async (e) => {
     e.preventDefault();
   
+    if (!isCaptchaVerified) {
+      setError("Please complete the CAPTCHA verification");
+      return;
+    }
+
+
     try {
       const data = await loginUser(email, password); // Call API
   
@@ -68,6 +80,7 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+             <Captcha onVerify={handleCaptchaVerify} />
 
             {error && <p style={{ color: "red" }}>{error}</p>}
 
@@ -80,7 +93,11 @@ const Login = () => {
               </a>
             </div>
 
-            <button type="submit" className="login-button-icon">Login</button>
+            <button 
+              type="submit" 
+              className="login-button-icon" 
+              disabled={!isCaptchaVerified}
+            >Login</button>
           </form>
         </div>
       </div>
