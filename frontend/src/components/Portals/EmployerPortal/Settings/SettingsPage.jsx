@@ -1,17 +1,28 @@
 import { useState } from "react";
-import { Settings, User, LogOut, MessageSquare, Briefcase, LayoutDashboard, FileText, PlusCircle, HelpCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // For redirection
-import "./SettingsPage.css"; // Import CSS
+import { 
+  Settings, 
+  User, 
+  LogOut, 
+  MessageSquare, 
+  Briefcase, 
+  LayoutDashboard, 
+  FileText, 
+  PlusCircle, 
+  HelpCircle 
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import "./SettingsPage.css";
 import PostJobForm from "./PostJobForm";
+import ATSReports from "./ATSReports"; // Import the ATS Reports component
 
 const SettingsPage = () => {
   const [activeSection, setActiveSection] = useState(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
   // Handle logout
   const handleLogout = () => {
-    navigate("/employer-portal"); // Redirect to employer portal page
+    navigate("/employer-portal");
   };
 
   // Function to render content based on active section
@@ -26,7 +37,7 @@ const SettingsPage = () => {
       case "dashboard":
         return <div className="content">📊 Dashboard Analytics</div>;
       case "reports":
-        return <div className="content">📑 ATS Reports</div>;
+        return <ATSReports />; // Render our ATS Reports component
       case "post-job":
         return <PostJobForm />;
       default:
@@ -38,29 +49,73 @@ const SettingsPage = () => {
     <div className="settings-container">
       {/* Sidebar */}
       <aside className="sidebar">
-        {activeSection === "settings" ? (
-          // Profile Icon with Dropdown
-          <div className="profile-container">
-            <User className="icon profile-icon" onClick={() => setShowProfileMenu(!showProfileMenu)} />
-            {showProfileMenu && (
-              <div className="dropdown-menu">
-                <button className="dropdown-item" onClick={handleLogout}>
-                  <LogOut size={16} /> Logout
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          // Settings Icon
-          <Settings className="icon" onClick={() => setActiveSection("settings")} />
-        )}
+        <div className="sidebar-top">
+          {activeSection === "settings" ? (
+            // Profile Icon with Dropdown
+            <div className="profile-container">
+              <User 
+                className="icon profile-icon" 
+                onClick={() => setShowProfileMenu(!showProfileMenu)} 
+              />
+              {showProfileMenu && (
+                <div className="dropdown-menu">
+                  <button className="dropdown-item" onClick={handleLogout}>
+                    <LogOut size={16} /> Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            // Settings Icon
+            <Settings 
+              className={`icon ${activeSection === "settings" ? "active" : ""}`} 
+              onClick={() => setActiveSection("settings")} 
+            />
+          )}
+        </div>
 
-        {/* Sidebar Navigation */}
-        <MessageSquare className="icon" onClick={() => setActiveSection("chat")} />
-        <Briefcase className="icon" onClick={() => setActiveSection("jobs")} />
-        <LayoutDashboard className="icon" onClick={() => setActiveSection("dashboard")} />
-        <FileText className="icon" onClick={() => setActiveSection("reports")} />
-        <PlusCircle className="icon" onClick={() => setActiveSection("post-job")} />
+        <div className="sidebar-nav">
+          {/* Sidebar Navigation */}
+          <button 
+            className={`nav-button ${activeSection === "chat" ? "active" : ""}`} 
+            onClick={() => setActiveSection("chat")}
+          >
+            <MessageSquare className="icon" />
+            <span className="nav-label">Messages</span>
+          </button>
+          
+          <button 
+            className={`nav-button ${activeSection === "jobs" ? "active" : ""}`} 
+            onClick={() => setActiveSection("jobs")}
+          >
+            <Briefcase className="icon" />
+            <span className="nav-label">Jobs</span>
+          </button>
+          
+          <button 
+            className={`nav-button ${activeSection === "dashboard" ? "active" : ""}`} 
+            onClick={() => setActiveSection("dashboard")}
+          >
+            <LayoutDashboard className="icon" />
+            <span className="nav-label">Dashboard</span>
+          </button>
+          
+          <button 
+            className={`nav-button ${activeSection === "reports" ? "active" : ""}`} 
+            onClick={() => setActiveSection("reports")}
+          >
+            <FileText className="icon" />
+            <span className="nav-label">ATS Reports</span>
+          </button>
+          
+          <button 
+            className={`nav-button ${activeSection === "post-job" ? "active" : ""}`} 
+            onClick={() => setActiveSection("post-job")}
+          >
+            <PlusCircle className="icon" />
+            <span className="nav-label">Post Job</span>
+          </button>
+        </div>
       </aside>
 
       {/* Main Content */}
