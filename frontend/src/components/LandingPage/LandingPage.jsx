@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import SubscribeBox from "../Subscribe/Subscribe";
 import Quote from "../Quote/Quote";
 import ResumeTemplate from "../ResumeTemp/resumeTemp";
 import "./LandingPage.css";
@@ -28,7 +27,6 @@ const LandingPage = () => {
       <div className="below-nav-content">
         <div>
           <Quote />
-          <SubscribeBox />
         </div>
         <div>
           <ResumeTemplate />
