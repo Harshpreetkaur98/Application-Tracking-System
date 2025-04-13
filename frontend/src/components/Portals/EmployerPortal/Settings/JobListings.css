@@ -1,0 +1,115 @@
+.jobs-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .job-list {
+    display: grid;
+    gap: 20px;
+  }
+  
+  .job-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .job-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .job-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2563eb;
+  }
+  
+  .job-actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .edit-btn, .delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .edit-btn {
+    color: #4b5563;
+  }
+  
+  .edit-btn:hover {
+    color: #2563eb;
+    background-color: #f3f4f6;
+  }
+  
+  .delete-btn {
+    color: #4b5563;
+  }
+  
+  .delete-btn:hover {
+    color: #dc2626;
+    background-color: #f3f4f6;
+  }
+  
+  .job-details {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #4b5563;
+  }
+  
+  .job-description {
+    margin-bottom: 15px;
+    color: #374151;
+    line-height: 1.5;
+  }
+  
+  .job-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 15px;
+  }
+  
+  .skill-tag {
+    background-color: #e5e7eb;
+    color: #4b5563;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+  
+  .job-date {
+    font-size: 0.8rem;
+    color: #6b7280;
+    text-align: right;
+  }
+  
+  .loading, .error, .no-jobs {
+    text-align: center;
+    padding: 40px;
+    color: #4b5563;
+  }
+  
+  .error {
+    color: #dc2626;
+  }

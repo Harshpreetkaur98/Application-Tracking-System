@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios"; // Make sure to install axios if not already installed
 import "./PostJobForm.css";
+import PropTypes from "prop-types";
 
-const PostJobForm = () => {
+const PostJobForm = ({ jobToEdit, onJobSaved }) => {
   const [formData, setFormData] = useState({
     title: "",
     company: "",
@@ -13,13 +14,39 @@ const PostJobForm = () => {
     salary: "",
   });
 
+  // Check if we're editing a job and update the form accordingly
+  useEffect(() => {
+    if (jobToEdit) {
+      setFormData({
+        title: jobToEdit.title || "",
+        company: jobToEdit.company || "",
+        location: jobToEdit.location || "",
+        type: jobToEdit.type || "Full-Time",
+        description: jobToEdit.description || "",
+        requirements: jobToEdit.skillsRequired ? jobToEdit.skillsRequired.join(", ") : "",
+        salary: jobToEdit.salaryRange || "",
+      });
+    } else {
+      // Reset form if not editing
+      setFormData({
+        title: "",
+        company: "",
+        location: "",
+        type: "Full-Time",
+        description: "",
+        requirements: "",
+        salary: "",
+      });
+    }
+  }, [jobToEdit]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const jobData = {
         title: formData.title,
@@ -28,20 +55,46 @@ const PostJobForm = () => {
         location: formData.location,
         salaryRange: formData.salary,
       };
-
-      const response = await axios.post("http://localhost:5000/api/jobs/post", jobData);
-
-      // Success: Alert or provide feedback
-      alert("Job Posted: " + response.data.message);
+  
+      let response;
+      
+      if (jobToEdit) {
+        // Update existing job - FIXED URL
+        response = await axios.put(`http://localhost:5000/api/jobs/jobs/${jobToEdit._id}`, jobData);
+        alert("Job Updated: " + response.data.message);
+      } else {
+        // Create new job
+        response = await axios.post("http://localhost:5000/api/jobs/post", jobData);
+        alert("Job Posted: " + response.data.message);
+      }
+  
+      // Clear form after submission
+      setFormData({
+        title: "",
+        company: "",
+        location: "",
+        type: "Full-Time",
+        description: "",
+        requirements: "",
+        salary: "",
+      });
+  
+      // Notify parent component that a job was saved
+      if (onJobSaved) {
+        onJobSaved();
+      }
+      
     } catch (error) {
-      console.error("Error posting job:", error);
-      alert("Failed to post the job. Please try again.");
+      console.error("Error saving job:", error);
+      alert(`Failed to ${jobToEdit ? 'update' : 'post'} the job. Please try again.`);
     }
   };
 
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-8 text-black">
-      <h2 className="text-2xl font-semibold mb-6 text-center">📝 Post a New Job</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-center">
+        {jobToEdit ? '✏️ Edit Job Posting' : '📝 Post a New Job'}
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="flex">
           <div>
@@ -132,15 +185,41 @@ const PostJobForm = () => {
           />
         </div>
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
-        >
-          Post Job
-        </button>
+        <div className="flex justify-between">
+          {jobToEdit && (
+            <button
+              type="button"
+              onClick={() => {
+                if (onJobSaved) onJobSaved(); // Go back to job listings
+              }}
+              className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition"
+            >
+              Cancel
+            </button>
+          )}
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+          >
+            {jobToEdit ? 'Update Job' : 'Post Job'}
+          </button>
+        </div>
       </form>
     </div>
   );
+};
+PostJobForm.propTypes = {
+  jobToEdit: PropTypes.shape({
+    _id: PropTypes.string,
+    title: PropTypes.string,
+    company: PropTypes.string,
+    location: PropTypes.string,
+    type: PropTypes.string,
+    description: PropTypes.string,
+    skillsRequired: PropTypes.arrayOf(PropTypes.string),
+    salaryRange: PropTypes.string,
+  }),
+  onJobSaved: PropTypes.func,
 };
 
 export default PostJobForm;

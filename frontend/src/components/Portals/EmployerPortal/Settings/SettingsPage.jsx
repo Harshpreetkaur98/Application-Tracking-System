@@ -14,15 +14,29 @@ import { useNavigate } from "react-router-dom";
 import "./SettingsPage.css";
 import PostJobForm from "./PostJobForm";
 import ATSReports from "./ATSReports"; // Import the ATS Reports component
+import JobListings from "./JobListing"; // Import the JobListings component
 
 const SettingsPage = () => {
   const [activeSection, setActiveSection] = useState(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [jobToEdit, setJobToEdit] = useState(null);
   const navigate = useNavigate();
 
   // Handle logout
   const handleLogout = () => {
     navigate("/employer-portal");
+  };
+
+  // Handle job edit
+  const handleEditJob = (job) => {
+    setJobToEdit(job);
+    setActiveSection("post-job"); // Switch to post job form for editing
+  };
+
+  // Handle job saved (both new and edit)
+  const handleJobSaved = () => {
+    setJobToEdit(null); // Clear the job being edited
+    setActiveSection("jobs"); // Go back to job listings after saving
   };
 
   // Function to render content based on active section
@@ -33,13 +47,13 @@ const SettingsPage = () => {
       case "chat":
         return <div className="content">💬 Chat Interface</div>;
       case "jobs":
-        return <div className="content">🔍 Job Listings</div>;
+        return <JobListings onEditJob={handleEditJob} />;
       case "dashboard":
         return <div className="content">📊 Dashboard Analytics</div>;
       case "reports":
         return <ATSReports />; // Render our ATS Reports component
       case "post-job":
-        return <PostJobForm />;
+        return <PostJobForm jobToEdit={jobToEdit} onJobSaved={handleJobSaved} />;
       default:
         return <div className="content empty">Select an option from the sidebar.</div>;
     }
@@ -86,7 +100,10 @@ const SettingsPage = () => {
           
           <button 
             className={`nav-button ${activeSection === "jobs" ? "active" : ""}`} 
-            onClick={() => setActiveSection("jobs")}
+            onClick={() => {
+              setJobToEdit(null); // Clear any job being edited
+              setActiveSection("jobs");
+            }}
           >
             <Briefcase className="icon" />
             <span className="nav-label">Jobs</span>
@@ -110,7 +127,10 @@ const SettingsPage = () => {
           
           <button 
             className={`nav-button ${activeSection === "post-job" ? "active" : ""}`} 
-            onClick={() => setActiveSection("post-job")}
+            onClick={() => {
+              setJobToEdit(null); // Clear any job being edited when posting a new job
+              setActiveSection("post-job");
+            }}
           >
             <PlusCircle className="icon" />
             <span className="nav-label">Post Job</span>
