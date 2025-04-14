@@ -60,7 +60,7 @@ const PostJobForm = ({ jobToEdit, onJobSaved }) => {
       
       if (jobToEdit) {
         // Update existing job - FIXED URL
-        response = await axios.put(`http://localhost:5000/api/jobs/jobs/${jobToEdit._id}`, jobData);
+        response = await axios.put(`http://localhost:5000/api/jobs/${jobToEdit._id}`, jobData);
         alert("Job Updated: " + response.data.message);
       } else {
         // Create new job
