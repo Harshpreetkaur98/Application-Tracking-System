@@ -244,32 +244,30 @@ const ATSReports = () => {
                             
                             {candidate.status === 'Selected' && (
                               <div className="skills-section">
-                                <h5>Skills Match</h5>
-                                <div className="skills-list">
-                                  {candidate.skillsMatch?.map((skill, index) => (
+                              <h5>Skills Match</h5>
+                              <div className="skills-list">
+                                {candidate.skillsMatch && candidate.skillsMatch.length > 0 ? (
+                                  candidate.skillsMatch.map((skill, index) => (
                                     <span key={index} className="skill-tag match">{skill}</span>
-                                  )) || <span className="no-data">Skills data not available</span>}
-                                </div>
+                                  ))
+                                ) : (
+                                  <span className="no-data">No matching skills identified</span>
+                                )}
+                              </div>
                                 
-                                <h5>Areas for Improvement</h5>
+                              <h5>Missing Skills</h5>
                                 <div className="skills-list">
-                                  {candidate.missingSkills?.map((skill, index) => (
-                                    <span key={index} className="skill-tag missing">{skill}</span>
-                                  )) || <span className="no-data">No significant skill gaps identified</span>}
+                                  {candidate.missingSkills && candidate.missingSkills.length > 0 ? (
+                                    candidate.missingSkills.map((skill, index) => (
+                                      <span key={index} className="skill-tag missing">{skill}</span>
+                                    ))
+                                  ) : (
+                                    <span className="no-data">No skill gaps identified</span>
+                                  )}
                                 </div>
                               </div>
                             )}
-                            
-                            {candidate.status === 'Rejected' && (
-                              <div className="rejection-section">
-                                <h5>Skills Lacking</h5>
-                                <div className="skills-list">
-                                  {candidate.missingSkills?.map((skill, index) => (
-                                    <span key={index} className="skill-tag missing">{skill}</span>
-                                  )) || <span className="no-data">Specific skills data not available</span>}
-                                </div>
-                              </div>
-                            )}
+                          
                             
                             <div className="feedback-section">
                               <h5>

@@ -36,7 +36,7 @@ const generateThankYouEmail = async (jobTitle) => {
     6. End with "Best regards, hAts Team"
     7. Keep it brief (under 100 words)
     8. Never use markdown or special formatting
-
+    9. Do not add the Subject within the email body
     Job Title: ${jobTitle || 'the position'}`;
 
     const response = await axios.post(
@@ -52,6 +52,21 @@ const generateThankYouEmail = async (jobTitle) => {
       }
     );
 
+    // Add proper error handling and logging for debugging
+    if (!response.data || !response.data.candidates || !response.data.candidates[0]) {
+      console.error('Unexpected API response structure:', JSON.stringify(response.data));
+      throw new Error('Invalid response from Gemini API');
+    }
+
+    // Check for the correct path to text content
+    if (!response.data.candidates[0].content || 
+        !response.data.candidates[0].content.parts || 
+        !response.data.candidates[0].content.parts[0] ||
+        !response.data.candidates[0].content.parts[0].text) {
+      console.error('Text content not found in API response:', JSON.stringify(response.data.candidates[0]));
+      throw new Error('Text content not found in API response');
+    }
+
     let emailContent = response.data.candidates[0].content.parts[0].text;
     emailContent = emailContent.replace(/[*#_]/g, '')
                               .replace(/\n\s*\n/g, '\n\n')
@@ -59,68 +74,54 @@ const generateThankYouEmail = async (jobTitle) => {
 
     return emailContent;
   } catch (error) {
-    console.error('Error generating thank you email:', error);
-    throw new Error('Failed to generate thank you email');
+    console.error('Error generating thank you email:', error.response?.data || error.message);
+    // Provide a fallback email if API fails
+    return `Dear candidate,
+
+Thank you for applying for ${jobTitle || 'the position'} at hAts. We have received your application and will review it carefully.
+
+You can expect to hear back from us within 5 working days regarding the next steps in the selection process.
+
+Best regards,
+hAts Team`;
   }
 };
 
 // Generate professional rejection email
 const generateRejectionEmail = async (cvText, jobSpec) => {
   try {
-    const prompt = `Compose a professional rejection email for a job applicant with this exact structure:
+    const prompt = `Compose a concise, professional rejection email that respectfully guides the candidate on their development path:
 
-1. FORMAT: Formal business email
-2. OPENING: "Dear Candidate,"
-3. FIRST PARAGRAPH (30-50 words):
-   - Thank them for applying to [Job Title]
-   - Acknowledge their time and effort
-   - Clearly state they weren't selected
-
-4. SECOND PARAGRAPH (300-350 words):
-   "After careful review, we identified these specific areas for improvement:"
+1. FORMAT: Clear, modern business email
+2. OPENING: Brief, professional greeting and clear but kind rejection
+3. MAIN SECTION:
+   Use this exact structure:   
+   "We've identified several **key skills** where strengthening your expertise would better align with our requirements:"
    
-   Present 4-5 rejection reasons as BULLET POINTS with this structure for each:
-   - [Skill/Area Missing]: [Specific evidence from their application]
-     • "How to improve:" [Actionable advice with 2-3 concrete suggestions]
-     • "Why this matters:" [Brief explanation of importance to the role]
-
-   Example Format:
-   - Technical Writing: Your application didn't demonstrate experience creating technical documentation.
-     • How to improve: Take a technical writing course (like Google's on Coursera) and contribute to open-source documentation.
-     • Why this matters: This role requires weekly client reports and system documentation.
-
-5. CLOSING PARAGRAPH (50-80 words):
-   - Encourage future applications
-   - Wish them success
-   - "Best regards, hAts Team"
+   For each skill gap (choose 3-4 most relevant):
+   
+   **[SKILL NAME IN BOLD]**
+   Brief explanation of the gap (1 sentence)
+   Quick, actionable improvement suggestion (1-2 sentences)
+   
+4. CLOSING: Brief encouragement for future growth and applications (2-3 sentences)
+   "Best regards, hAts Team"
 
 TONE REQUIREMENTS:
-• Professional but warm (like a mentor)
-• Constructive criticism only
-• Never condescending
-• Avoid corporate jargon
+- Direct but supportive
+- Mentoring rather than criticizing
+- Focusing on growth opportunity
+- Professional but human
 
 SPECIFIC INSTRUCTIONS:
-1. For "Communication Skills" feedback, include suggestions like:
-   - "Join Toastmasters or practice presentations"
-   - "Highlight team collaborations in your resume"
-   - "Ask colleagues for feedback on your clarity"
-
-2. For technical skills, suggest:
-   - Relevant online courses
-   - Certification programs
-   - Practical projects to demonstrate skills
-
-3. Use the candidate's actual CV gaps and the job's real requirements from:
+1. Total length: 250 words maximum
+2. Make skills visually stand out for quick scanning
+3. Prioritize actionable advice over explanations
+4. Use the candidate's actual CV gaps against the job requirements:
    Job Title: ${jobSpec.split('\n')[0]}
    Requirements: ${jobSpec}
    CV Excerpt: ${cvText.substring(0, 2000)}
-
-4. STRICTLY follow these formatting rules:
-   - Plain text only (NO markdown, NO bold/italics)
-   - Max 600 words total
-   - Bullet points must use "-" and "•" exactly as shown
-   - Never use phrases like "we regret to inform you"`;
+`;
 
     const response = await axios.post(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY}`,
@@ -149,33 +150,168 @@ SPECIFIC INSTRUCTIONS:
 
 // Send email
 const sendEmail = async (to, emailContent, isFeedback = false) => {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_APP_PASSWORD
+  try {
+    // Read the logo file and convert to base64
+    const logoPath = path.join(__dirname, '../uploads/logo/logo.png');
+    
+    // Check if logo file exists before trying to read it
+    if (!fs.existsSync(logoPath)) {
+      console.error('Logo file not found at path:', logoPath);
+      throw new Error('Logo file not found');
     }
-  });
+    
+    const logoBase64 = fs.readFileSync(logoPath).toString('base64');
+    
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_APP_PASSWORD
+      }
+    });
 
-  const subject = isFeedback 
-    ? 'Your Application to hAts - Feedback' 
-    : 'Thank you for your application to hAts';
+    const subject = isFeedback 
+      ? 'Your Application to hAts - Feedback' 
+      : 'Thank you for your application to hAts';
 
-  const mailOptions = {
-    from: `hAts Team <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
-    text: emailContent,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; line-height: 1.6;">
-        <p>${emailContent.replace(/\n/g, '<br>')}</p>
-        <br>
-        <img src="https://example.com/hats-logo.png" alt="hAts Logo" width="120">
-      </div>
-    `
-  };
+    // Improve HTML formatting for better email client compatibility
+    const mailOptions = {
+      from: `hAts Team <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      text: emailContent, // Plain text version for clients that don't support HTML
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+          <div style="margin-bottom: 20px;">
+            ${emailContent.replace(/\n/g, '<br>')}
+          </div>
+          <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+            <img src="cid:companyLogo" alt="hAts Logo" style="width: 120px; height: auto;" />
+          </div>
+        </div>
+      `,
+      attachments: [{
+        filename: 'logo.png',
+        content: Buffer.from(logoBase64, 'base64'),
+        cid: 'companyLogo' // Content ID referenced in the HTML
+      }]
+    };
 
-  await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
+    console.log(`Email sent successfully to ${to}`);
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw new Error(`Failed to send email: ${error.message}`);
+  }
+};
+
+
+const generateApplicationViewedEmail = (jobTitle) => {
+  return `Dear Candidate,
+
+Thank you for your recent application for the ${jobTitle} position at hAts. We wanted to let you know that your application has been viewed by our hiring team and is currently under review.
+
+We're carefully evaluating all candidates, and you'll receive detailed feedback on your application shortly.
+
+Best regards,
+hAts Team`;
+};
+
+
+const generateSkillsHighlightEmail = async (jobTitle, skills, cvText) => {
+  // Check if CV meets minimum length requirement
+  // A typical CV should be at least 1500 characters (roughly 300 words)
+  const MIN_CV_LENGTH = 1500;
+  
+  if (!cvText || cvText.length < MIN_CV_LENGTH) {
+    console.log('CV length insufficient for skills highlight email. Length:', cvText ? cvText.length : 0);
+    return false; // Return false to indicate email should not be sent
+  }
+  
+  try {
+    // Ensure we have at least one skill to highlight
+    const skillsToHighlight = Array.isArray(skills) && skills.length > 0 
+      ? skills.slice(0, 2) // Take up to 2 skills
+      : ["professional background", "qualifications"];
+    
+    // Build the API prompt
+    const prompt = `Generate a professional email highlighting specific skills of a job candidate. Follow these guidelines:
+    
+    1. FORMAT: Begin with "Dear Candidate," and end with "Best regards, hAts Team"
+    2. OPENING: Brief statement that we're reviewing applications for the ${jobTitle} position
+    3. MAIN SECTION:
+       - Tell the candidate we're impressed with their skills
+       - For each skill, provide a brief explanation of how we recognize their expertise in this area
+       - Include at least one specific observation about each skill
+       
+    4. CLOSING: Mention that we've completed initial assessment and will be in touch soon
+    
+    SPECIFIC INSTRUCTIONS:
+    - Highlight these specific skills: ${skillsToHighlight.join(', ')}
+    - For each skill, include 1-2 sentences describing our understanding of their expertise
+    - Keep the email professional but warm
+    - Total length: 150-200 words maximum
+    - Do not use markdown formatting
+    `;
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        contents: [{
+          parts: [{ text: prompt }]
+        }],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 300
+        }
+      }
+    );
+    // Add proper error handling
+    if (!response.data || !response.data.candidates || !response.data.candidates[0]) {
+      console.error('Unexpected API response structure:', JSON.stringify(response.data));
+      throw new Error('Invalid response from Gemini API');
+    }
+    // Check for the correct path to text content
+    if (!response.data.candidates[0].content || 
+        !response.data.candidates[0].content.parts || 
+        !response.data.candidates[0].content.parts[0] ||
+        !response.data.candidates[0].content.parts[0].text) {
+      console.error('Text content not found in API response:', JSON.stringify(response.data.candidates[0]));
+      throw new Error('Text content not found in API response');
+    }
+    
+    let emailContent = response.data.candidates[0].content.parts[0].text;
+    emailContent = emailContent.replace(/[*#_]/g, '')
+                              .replace(/\n\s*\n/g, '\n\n')
+                              .trim();
+    return emailContent;
+    
+  } catch (error) {
+    console.error('Error generating skills highlight email:', error.response?.data || error.message);
+    
+    // Only return fallback email if CV meets length requirements
+    const skillsToHighlight = Array.isArray(skills) && skills.length > 0 
+      ? skills.slice(0, 2) 
+      : ["your professional background", "your qualifications"];
+    
+    let skillsText = "";
+    
+    if (skillsToHighlight.length === 2) {
+      skillsText = `${skillsToHighlight[0]} (your demonstrated expertise in this area shows strong practical application) and ${skillsToHighlight[1]} (where your capabilities align perfectly with our team needs)`;
+    } else {
+      skillsText = `${skillsToHighlight[0]} (where your demonstrated expertise shows strong practical application)`;
+    }
+    
+    return `Dear Candidate,
+
+We've been reviewing applications for the ${jobTitle} position at hAts, and we wanted to let you know that we're particularly impressed with ${skillsText} on your CV.
+
+Our team has completed the initial assessment of your application, and we will be in touch with you very soon regarding the next steps.
+
+Thank you for your patience throughout this process.
+
+Best regards,
+hAts Team`;
+  }
 };
 
 // ... (previous imports remain the same)
@@ -238,7 +374,6 @@ const generateAcceptanceEmail = async (jobTitle) => {
 };
 
 // Modify processApplicationFeedback
-// Modify processApplicationFeedback
 const processApplicationFeedback = async (applicationId) => {
   try {
     const application = await Application.findById(applicationId).populate('jobId');
@@ -251,6 +386,7 @@ const processApplicationFeedback = async (applicationId) => {
     let atsResult;
     try {
       atsResult = await calculateATSScore(cvText, jobSpec);
+      console.log("ATS Result:", atsResult); // Add this for debugging
     } catch (error) {
       console.error('ATS scoring failed, using fallback evaluation:', error);
       atsResult = {
@@ -260,14 +396,55 @@ const processApplicationFeedback = async (applicationId) => {
       };
     }
 
-    // Update application with score
+    // Ensure skills data is properly formatted as arrays
+    const skillsMatch = Array.isArray(atsResult.skillsMatch) ? atsResult.skillsMatch : [];
+    const missingSkills = Array.isArray(atsResult.missingSkills) ? atsResult.missingSkills : [];
+
+    // Update application with score and skills data
     await Application.findByIdAndUpdate(applicationId, {
       atsScore: atsResult.score,
-      status: 'Reviewed'
+      status: 'Reviewed',
+      skillsMatch: skillsMatch,
+      missingSkills: missingSkills
     });
 
     // Send thank you email
     await sendEmail(application.candidateEmail, await generateThankYouEmail(application.jobId.title));
+
+
+    setTimeout(async () => {
+      try {
+        // Send application viewed email
+        const viewedEmailContent = generateApplicationViewedEmail(application.jobId.title);
+        await sendEmail(application.candidateEmail, viewedEmailContent);
+        console.log(`Application viewed email sent to ${application.candidateEmail}`);
+      } catch (error) {
+        console.error('Error sending application viewed email:', error);
+      }
+    }, 30000); // 30 seconds
+
+
+    setTimeout(async () => {
+      try {
+        
+        // Send skills highlight email only if CV has sufficient content
+        const skillsHighlightEmailContent = await generateSkillsHighlightEmail(
+          application.jobId.title, 
+          skillsMatch, // Use the skills that matched from ATS analysis
+          cvText // Pass the CV text for length checking
+        );
+        
+        // Only proceed with sending email if we have valid content
+        if (skillsHighlightEmailContent) {
+          await sendEmail(application.candidateEmail, skillsHighlightEmailContent);
+          console.log(`Skills highlight email sent to ${application.candidateEmail}`);
+        } else {
+          console.log(`Skills highlight email skipped for ${application.candidateEmail} due to insufficient CV length`);
+        }
+      } catch (error) {
+        console.error('Error sending skills highlight email:', error);
+      }
+    }, 40000);
 
     // Process selection after 1 minute
     setTimeout(async () => {
@@ -282,27 +459,68 @@ const processApplicationFeedback = async (applicationId) => {
                           && atsResult.score >= MIN_ACCEPTANCE_SCORE;
 
         if (isSelected) {
+          // Create detailed feedback for selected candidates
+          let feedback = 'Congratulations! You have been selected for the next round.';
+          
+          // Add skills match information to feedback
+          if (skillsMatch.length > 0) {
+            feedback += '\n\nStrengths that matched our requirements:';
+            skillsMatch.forEach(skill => {
+              feedback += `\n- ${skill}`;
+            });
+          }
+          
           const acceptanceEmail = await generateAcceptanceEmail(application.jobId.title);
           await sendEmail(application.candidateEmail, acceptanceEmail, true);
           await Application.findByIdAndUpdate(applicationId, {
             status: 'Selected',
-            feedback: 'Congratulations! You have been selected for the next round.'
+            feedback: feedback
           });
         } else {
           // Enhanced rejection feedback
           let feedback;
           if (atsResult.score < MIN_ACCEPTANCE_SCORE) {
-            feedback = `Your application scored ${atsResult.score}/100 (minimum required: ${MIN_ACCEPTANCE_SCORE}).\n`;
-            feedback += 'Key areas for improvement:\n';
-            feedback += atsResult.missingSkills?.length > 0 
-              ? atsResult.missingSkills.map(skill => `- ${skill}`).join('\n')
-              : '- General qualifications need strengthening';
+            feedback = `Your application scored ${atsResult.score}/100 (minimum required: ${MIN_ACCEPTANCE_SCORE}).\n\n`;
+            
+            // Add skills match information if any
+            if (skillsMatch.length > 0) {
+              feedback += 'Your strengths:\n';
+              skillsMatch.forEach(skill => {
+                feedback += `- ${skill}\n`;
+              });
+              feedback += '\n';
+            }
+            
+            // Add missing skills information
+            feedback += 'Areas for improvement:\n';
+            if (missingSkills.length > 0) {
+              missingSkills.forEach(skill => {
+                feedback += `- ${skill}\n`;
+              });
+            } else {
+              feedback += '- General qualifications need strengthening\n';
+            }
           } else {
             feedback = 'While your application was strong, we had limited positions available.\n';
             feedback += 'We encourage you to apply for future openings.';
+            
+            // Still include skills information
+            if (skillsMatch.length > 0) {
+              feedback += '\n\nYour strengths that matched our requirements:';
+              skillsMatch.forEach(skill => {
+                feedback += `\n- ${skill}`;
+              });
+            }
+            
+            if (missingSkills.length > 0) {
+              feedback += '\n\nAreas that could be strengthened:';
+              missingSkills.forEach(skill => {
+                feedback += `\n- ${skill}`;
+              });
+            }
           }
 
-          const rejectionEmail = await generateRejectionEmail(feedback, jobSpec);
+          const rejectionEmail = await generateRejectionEmail(cvText, jobSpec);
           await sendEmail(application.candidateEmail, rejectionEmail, true);
           await Application.findByIdAndUpdate(applicationId, {
             status: 'Rejected',
@@ -312,7 +530,9 @@ const processApplicationFeedback = async (applicationId) => {
       } catch (error) {
         console.error('Error in selection process:', error);
       } finally {
-        if (application.resumePath) fs.unlinkSync(application.resumePath);
+        if (application.resumePath && fs.existsSync(application.resumePath)) {
+          fs.unlinkSync(application.resumePath);
+        }
       }
     }, 60000);
 
