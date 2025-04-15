@@ -30,23 +30,31 @@ const EmployerPortal = () => {
       }
     };
 
-    const fetchCandidates = async () => {
-      try {
-        const response = await axios.get('/api/candidates');
-        if (response.data && response.data.candidates) {
-          setCandidates(response.data.candidates);
-          setTotalApplicants(response.data.candidates.length);
-        } else {
-          setCandidates([]);
-          setTotalApplicants(0);
-        }
-      } catch (err) {
-        console.error('Error fetching candidates:', err);
-        setError('Failed to load applicants. Please try again later.');
-        setCandidates([]);
-        setTotalApplicants(0);
-      }
-    };
+    // Function to fetch candidates from the database
+const fetchCandidates = async () => {
+  try {
+    console.log('Fetching candidates from: http://localhost:5000/api/candidates');
+    const response = await axios.get('http://localhost:5000/api/candidates');
+    console.log('Candidates response:', response.data);
+    
+    if (response.data && response.data.candidates) {
+      console.log('Candidates found:', response.data.candidates.length);
+      setCandidates(response.data.candidates);
+      setTotalApplicants(response.data.candidates.length);
+    } else {
+      console.log('No candidates data found in response:', response.data);
+      setCandidates([]);
+      setTotalApplicants(0);
+    }
+  } catch (err) {
+    console.error('Error fetching candidates:', err);
+    console.error('Error details:', err.response ? err.response.data : 'No response data');
+    setError('Failed to load applicants. Please try again later.');
+    setCandidates([]);
+    setTotalApplicants(0);
+  }
+};
+
 
     const fetchData = async () => {
       setLoading(true);
@@ -143,7 +151,6 @@ const EmployerPortal = () => {
         <div className="content-card job-posts-card">
           <div className="card-header">
             <h2>Recent Job Posts</h2>
-            <button className="view-all-btn">View All</button>
           </div>
           <div className="job-posts-list">
             {jobs.length > 0 ? (
@@ -179,33 +186,57 @@ const EmployerPortal = () => {
           </div>
         </div>
 
-        <div className="content-card applicants-card">
-          <div className="card-header">
-            <h2>Recent Applicants</h2>
-            <button className="view-all-btn">View All</button>
-          </div>
-          <div className="applicants-list">
-            {candidates.length > 0 ? (
-              candidates.slice(0, 5).map((candidate) => (
-                <div key={candidate._id} className="applicant-item">
-                  <div className="applicant-avatar">
-                    <img src="/api/placeholder/36/36" alt={candidate.name || 'Candidate'} />
+{/* Recent Applicants */}
+          <div className="content-card applicants-card">
+            <div className="card-header">
+              <h2>Recent Applicants</h2>
+              <button className="view-all-btn">View All</button>
+            </div>
+            <div className="applicants-list">
+              {loading ? (
+                <p>Loading applicants...</p>
+              ) : candidates.length > 0 ? (
+                candidates.slice(0, 5).map((candidate) => (
+                  <div key={candidate._id} className="applicant-item">
+                    <div className="applicant-avatar document-icon" 
+                        onClick={() => candidate.resume && window.open(`http://localhost:5000/${candidate.resume}`, '_blank')}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" 
+                          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                      </svg>
+                    </div>
+                    <div className="applicant-info">
+                      <h3>{candidate.name || 'Candidate'}</h3>
+                      <p>{candidate.email}</p>
+                      <span className="applicant-date">Joined: {formatDate(candidate.createdAt)}</span>
+                    </div>
+                    <div className="applicant-actions">
+                      {candidate.resume && (
+                        <a 
+                          href={`http://localhost:5000/${candidate.resume}`} 
+                          download
+                          className="btn-outline resume-btn"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Download CV
+                        </a>
+                      )}
+                      <button className="btn-outline">View</button>
+                    </div>
                   </div>
-                  <div className="applicant-info">
-                    <h3>{candidate.name || 'Candidate'}</h3>
-                    <p>{candidate.email}</p>
-                    <span className="applicant-date">Joined: {formatDate(candidate.createdAt)}</span>
-                  </div>
-                  <button className="btn-outline">View</button>
+                ))
+              ) : (
+                <div className="empty-state">
+                  <p>No applicants found yet.</p>
                 </div>
-              ))
-            ) : (
-              <div className="empty-state">
-                <p>No applicants found yet.</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
       </div>
     </div>
   );

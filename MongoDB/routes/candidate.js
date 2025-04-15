@@ -4,6 +4,19 @@ const Candidate = require("../models/candidate");
 
 const router = express.Router();
 
+
+
+// In your candidate routes file
+router.get('/', async (req, res) => {
+  try {
+    const candidates = await Candidate.find().sort({ createdAt: -1 }).limit(10);
+    res.status(200).json({ candidates });
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching candidates', error: err.message });
+  }
+});
+
+
 // ✅ Candidate Signup Route
 router.post("/register", async (req, res) => {
   try {
