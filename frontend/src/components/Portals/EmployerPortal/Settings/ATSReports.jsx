@@ -29,7 +29,7 @@ const ATSReports = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/jobs/jobs');
+        const response = await axios.get('http://localhost:5000/api/jobs');
         setJobs(response.data.jobs);
       } catch (error) {
         console.error('Error fetching jobs:', error);

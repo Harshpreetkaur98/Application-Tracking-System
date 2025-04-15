@@ -14,7 +14,7 @@ const JobListings = ({ onEditJob }) => {
     const fetchJobs = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:5000/api/jobs/jobs");
+        const response = await axios.get("http://localhost:5000/api/jobs");
         setJobs(response.data.jobs);
         setLoading(false);
       } catch (error) {

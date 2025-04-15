@@ -1,10 +1,9 @@
-// EmployerPortal.jsx
 import { useState, useEffect } from 'react';
 import './EPortalPage.css';
 import { CiCirclePlus } from "react-icons/ci";
 import { FiUsers, FiBriefcase, FiClock } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Make sure to install axios: npm install axios
+import axios from 'axios';
 
 const EmployerPortal = () => {
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ const EmployerPortal = () => {
     // Function to fetch jobs from the database
     const fetchJobs = async () => {
       try {
-        const response = await axios.get('/api/jobs');
+        const response = await axios.get('http://localhost:5000/api/jobs');
         if (response.data && response.data.jobs) {
           setJobs(response.data.jobs);
         } else {
@@ -31,7 +30,6 @@ const EmployerPortal = () => {
       }
     };
 
-    // Function to fetch candidates from the database
     const fetchCandidates = async () => {
       try {
         const response = await axios.get('/api/candidates');
@@ -50,7 +48,6 @@ const EmployerPortal = () => {
       }
     };
 
-    // Call both fetch functions
     const fetchData = async () => {
       setLoading(true);
       await Promise.all([fetchJobs(), fetchCandidates()]);
@@ -64,12 +61,10 @@ const EmployerPortal = () => {
     navigate('/Employer-Portal/settings');
   };
 
-  // Calculate the average time to hire (example calculation - update with your logic)
   const calculateAvgTimeToHire = () => {
-    return '14 days'; // Replace with your actual calculation based on your data
+    return '14 days'; 
   };
 
-  // Format date to display in a readable format
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
@@ -103,7 +98,6 @@ const EmployerPortal = () => {
       </div>
 
       <div className="dashboard-grid">
-        {/* Stats Cards */}
         <div className="stats-card">
           <div className="stats-card-icon">
             <FiBriefcase />
@@ -146,7 +140,6 @@ const EmployerPortal = () => {
       </div>
 
       <div className="dashboard-content">
-        {/* Recent Job Posts */}
         <div className="content-card job-posts-card">
           <div className="card-header">
             <h2>Recent Job Posts</h2>
@@ -173,8 +166,8 @@ const EmployerPortal = () => {
                     {job.salaryRange && <span className="job-salary">{job.salaryRange}</span>}
                   </div>
                   <div className="job-post-actions">
-                    <button className="btn-outline">Edit</button>
-                    <button className="btn-outline">View Applications</button>
+                    <button className="btn-outline" onClick={() => navigate('/Employer-Portal/settings', { state: { job } })}>Edit</button>
+                    <button className="btn-outline" onClick={() => navigate('/Employer-Portal/settings', { state: { job } })}>View Applications</button>
                   </div>
                 </div>
               ))
@@ -186,7 +179,6 @@ const EmployerPortal = () => {
           </div>
         </div>
 
-        {/* Recent Applicants */}
         <div className="content-card applicants-card">
           <div className="card-header">
             <h2>Recent Applicants</h2>
