@@ -1,0 +1,186 @@
+@startuml
+' Basic styling with blue and black colors only
+skinparam sequence {
+    ArrowColor blue
+    ActorBorderColor blue
+    LifeLineBorderColor blue
+    LifeLineBackgroundColor white
+
+    ParticipantBorderColor blue
+    ParticipantBackgroundColor white
+    ParticipantFontColor black
+
+    ActorBackgroundColor white
+    ActorFontColor blue
+}
+
+actor Candidate
+actor Employer
+participant "Candidate Account" as CA
+participant "ATS System" as ATS
+participant "System Database" as DB
+participant "Job Posting" as JP
+participant "Application" as App
+participant "Resume (PDF)" as Res
+participant "Cover Letter" as CL
+participant "Email Service" as Email
+participant "Employer Account" as EA
+
+== Candidate Applies for Job ==
+
+Candidate -> CA : Log in with credentials
+activate CA
+CA -> ATS : verifyLogin(credentials)
+activate ATS
+ATS --> CA : Login success/failure
+deactivate ATS
+CA --> Candidate : Login confirmed
+deactivate CA
+
+Candidate -> ATS : View available job listings
+activate ATS
+ATS -> JP : displayAvailableJobs()
+ATS --> Candidate : Show job listings
+deactivate ATS
+
+Candidate -> CA : Select job and click apply
+activate CA
+
+opt Cover Letter Provided
+    Candidate -> CA : Upload cover letter
+    CA -> CL : storeCoverLetter()
+    activate CL
+    CL --> CA : Stored OK
+    deactivate CL
+end
+
+Candidate -> CA : Upload resume
+CA -> Res : storeResume()
+activate Res
+Res --> CA : Stored OK
+deactivate Res
+
+CA -> ATS : createApplication(details, resumeRef, coverLetterRef?)
+activate ATS
+ATS -> DB : storeApplication(applicationData)
+activate DB
+DB --> ATS : Application record created
+deactivate DB
+ATS -> App : linkApplicationToJobPosting()
+ATS --> CA : Application submitted confirmation
+
+ATS -> Email : sendEmail(to=Candidate, type='Application Received')
+activate Email
+Email --> ATS : Email sent confirmation
+deactivate Email
+
+deactivate ATS
+CA --> Candidate : Application submitted successfully
+deactivate CA
+
+== Employer Reviews Applications ==
+
+Employer -> EA : Log in as admin
+activate EA
+EA -> ATS : verifyAdminLogin(credentials)
+activate ATS
+ATS --> EA : Admin login success/failure
+deactivate ATS
+EA --> Employer : Login confirmed
+deactivate EA
+
+Employer -> ATS : Select job posting to view applicants
+activate ATS
+ATS -> JP : fetchApplicantsForJob(jobID)
+ATS -> App : retrieveApplicationsForJob(jobID)
+ATS --> Employer : Display list of applications
+deactivate ATS
+
+loop For each application
+    Employer -> ATS : Select candidate application
+    activate ATS
+    ATS -> App : getApplicationDetails(appID)
+    activate App
+    App --> ATS : Application details
+    deactivate App
+
+    ATS -> Res : retrieveResume(resumeRef)
+    activate Res
+    Res --> ATS : Resume data
+    deactivate Res
+
+    opt Cover Letter Included
+        ATS -> CL : retrieveCoverLetter(coverLetterRef)
+        activate CL
+        CL --> ATS : Cover letter data
+        deactivate CL
+    end
+
+    ATS --> Employer : Show full candidate profile
+
+    note over ATS : Evaluate skill match
+    ATS -> JP : getJobRequirements(jobID)
+    activate JP
+    JP --> ATS : Requirements/keywords
+    deactivate JP
+    ATS -> Res : getResumeKeywords(resumeRef)
+    activate Res
+    Res --> ATS : Resume keywords
+    deactivate Res
+    ATS -> ATS : evaluateMatch(jobReqs, resumeKeywords)
+
+    alt Match Found
+        Employer -> ATS : updateStatus(appID, "Selected for Review")
+        ATS -> App : setStatus(appID, "Selected for Review")
+        activate App
+        App --> ATS : Status updated
+        deactivate App
+        ATS --> Employer : Status update confirmed
+
+        ATS -> Email : sendEmail(to=Candidate, type='Selected')
+        activate Email
+        Email --> ATS : Email sent confirmation
+        deactivate Email
+
+    else No Match Found
+        Employer -> ATS : updateStatus(appID, "Rejected")
+        ATS -> App : setStatus(appID, "Rejected")
+        activate App
+        App --> ATS : Status updated
+        deactivate App
+        ATS --> Employer : Status update confirmed
+
+        ATS -> Email : sendEmail(to=Candidate, type='Rejected')
+        activate Email
+        Email --> ATS : Email sent confirmation
+        deactivate Email
+    end
+    deactivate ATS
+end
+
+== Employer Follow-up ==
+
+Employer -> ATS : Request ATS report
+activate ATS
+ATS -> DB : fetchATSReportDetails(jobID)
+ATS --> Employer : Show ATS report
+
+Employer -> ATS : Download candidate CV
+ATS -> Res : downloadCV(resumeRef)
+activate Res
+Res --> ATS : CV file data
+deactivate Res
+ATS --> Employer : CV downloaded
+deactivate ATS
+
+== Final Status Update ==
+Employer -> ATS : Initiate final status update
+activate ATS
+ATS -> Email : sendEmail(to=Candidate, type='Final Status Update')
+activate Email
+Email --> ATS : Email sent confirmation
+deactivate Email
+ATS --> Employer : Final status update sent
+deactivate ATS
+
+@enduml

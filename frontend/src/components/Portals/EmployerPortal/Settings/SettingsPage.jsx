@@ -3,9 +3,9 @@ import {
   Settings, 
   User, 
   LogOut, 
-  MessageSquare, 
+  // MessageSquare, 
   Briefcase, 
-  LayoutDashboard, 
+  // LayoutDashboard, 
   FileText, 
   PlusCircle, 
   HelpCircle 
@@ -48,8 +48,6 @@ const SettingsPage = () => {
         return <div className="content">💬 Chat Interface</div>;
       case "jobs":
         return <JobListings onEditJob={handleEditJob} />;
-      case "dashboard":
-        return <div className="content">📊 Dashboard Analytics</div>;
       case "reports":
         return <ATSReports />; // Render our ATS Reports component
       case "post-job":
@@ -90,13 +88,13 @@ const SettingsPage = () => {
 
         <div className="sidebar-nav">
           {/* Sidebar Navigation */}
-          <button 
+          {/* <button 
             className={`nav-button ${activeSection === "chat" ? "active" : ""}`} 
             onClick={() => setActiveSection("chat")}
           >
             <MessageSquare className="icon" />
             <span className="nav-label">Messages</span>
-          </button>
+          </button> */}
           
           <button 
             className={`nav-button ${activeSection === "jobs" ? "active" : ""}`} 
@@ -109,13 +107,13 @@ const SettingsPage = () => {
             <span className="nav-label">Jobs</span>
           </button>
           
-          <button 
+          {/* <button 
             className={`nav-button ${activeSection === "dashboard" ? "active" : ""}`} 
             onClick={() => setActiveSection("dashboard")}
           >
             <LayoutDashboard className="icon" />
             <span className="nav-label">Dashboard</span>
-          </button>
+          </button> */}
           
           <button 
             className={`nav-button ${activeSection === "reports" ? "active" : ""}`} 

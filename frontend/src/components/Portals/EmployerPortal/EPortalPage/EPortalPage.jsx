@@ -121,7 +121,7 @@ const fetchCandidates = async () => {
             <FiUsers />
           </div>
           <div className="stats-card-content">
-            <h3>Total Applications</h3>
+            <h3>Total Applicants</h3>
             <p className="stats-card-value">{totalApplicants}</p>
           </div>
         </div>
