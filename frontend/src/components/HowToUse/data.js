@@ -1,8 +1,13 @@
+import profileManagement from "../../assets/images/profile-page-working.png";
+import skillsManagement from "../../assets/images/skills-email.png";
+import activityManagement from "../../assets/images/your-activity-page.png";
+import jobApplication from "../../assets/images/job-application-working.png";
+
 export const guideData = [
     {
       title: "Profile Management",
       description: "Your profile is your professional identity on hAts. Complete your profile to increase your visibility to potential employers.",
-      imageUrl: "/api/placeholder/500/300", // Replace with actual image
+      imageUrl: profileManagement, // Replace with actual image
       steps: [
         "Navigate to the 'Profile' section from your candidate dashboard",
         "Upload your latest CV/resume in PDF format",
@@ -19,7 +24,7 @@ export const guideData = [
     {
       title: "Your Activity Dashboard",
       description: "Track all your job applications in one place and stay updated on their status throughout the hiring process.",
-      imageUrl: "/api/placeholder/500/300", // Replace with actual image
+      imageUrl: activityManagement, // Replace with actual image
       steps: [
         "Access 'Your Activity' from the main navigation menu",
         "View all your active applications and their current status",
@@ -36,7 +41,7 @@ export const guideData = [
     {
       title: "Job Search & Application",
       description: "Find and apply to positions that match your skills and career goals using our powerful search and filter tools.",
-      imageUrl: "/api/placeholder/500/300", // Replace with actual image
+      imageUrl: jobApplication, // Replace with actual image
       steps: [
         "Use the search bar to find jobs by title, company, or keywords",
         "Apply filters to narrow results by location, salary, job type, etc.",
@@ -53,7 +58,7 @@ export const guideData = [
     {
       title: "Understanding Feedback",
       description: "Get detailed, constructive feedback on your applications to continuously improve your job search strategy.",
-      imageUrl: "/api/placeholder/500/300", // Replace with actual image
+      imageUrl: skillsManagement, // Replace with actual image
       steps: [
         "Receive email notifications when feedback is available",
         "Review the specific areas of improvement highlighted in the feedback",
