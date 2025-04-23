@@ -107,7 +107,6 @@ const SignIn = () => {
                 <input type="checkbox" id="remember" />
                 <label htmlFor="remember">Remember Me</label>
               </div>
-              <Link to="/forgot-password" className="forgot-password">Forgot Password?</Link>
             </div>
 
             <div className="captcha-wrapper">

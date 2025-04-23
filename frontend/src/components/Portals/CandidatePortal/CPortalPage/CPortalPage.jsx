@@ -17,6 +17,39 @@ function CandidatePortal() {
     coverLetter: ''
   });
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setApplicationForm({
+      ...applicationForm,
+      [name]: value
+    });
+    
+    // Check application status when email changes
+    if (name === 'email' && value && selectedJob) {
+      checkApplicationStatus(selectedJob._id, value);
+    }
+  };
+  
+  // Create a separate function for checking application status
+  const checkApplicationStatus = async (jobId, email) => {
+    if (jobId && email) {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/applications/status`, 
+          {
+            params: {
+              jobId: jobId,
+              email: email
+            }
+          }
+        );
+        setApplicationStatus(response.data);
+      } catch (error) {
+        console.error('Error checking application status:', error);
+      }
+    }
+  };
+
   // Fetch jobs from the backend when the component mounts
   useEffect(() => {
     const fetchJobs = async () => {
@@ -66,13 +99,7 @@ function CandidatePortal() {
     setApplicationStatus(null); // Reset status when applying to new job
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setApplicationForm({
-      ...applicationForm,
-      [name]: value
-    });
-  };
+  // Removed duplicate handleInputChange function
 
   const handleFileChange = (e) => {
     setApplicationForm({
@@ -268,8 +295,12 @@ function CandidatePortal() {
                   rows="5"
                 />
               </div>
-              <button type="submit" className="submit-application">
-                Submit Application
+              <button 
+                type="submit" 
+                className="submit-application"
+                disabled={applicationStatus && applicationStatus.status}
+              >
+                {applicationStatus && applicationStatus.status ? 'Already Applied' : 'Submit Application'}
               </button>
             </form>
           </div>
