@@ -11,13 +11,30 @@ const Job = require('../models/job');
 
 // Extract text from the PDF
 const extractTextFromPdf = async (pdfPath) => {
+  console.log(`[PDF Extraction] Starting to process PDF at path: ${pdfPath}`);
   try {
+    console.log(`[PDF Extraction] Reading file from disk...`);
     const dataBuffer = fs.readFileSync(pdfPath);
+    console.log(`[PDF Extraction] File read successfully, file size: ${dataBuffer.length} bytes`);
+    
+    console.log(`[PDF Extraction] Beginning PDF parsing...`);
     const data = await pdfParse(dataBuffer);
+    console.log(`[PDF Extraction] PDF parsing successful, extracted ${data.text.length} characters`);
+    
     return data.text;
   } catch (error) {
-    console.error('Error extracting text from PDF:', error);
-    throw new Error('Failed to parse PDF file');
+    console.error(`[PDF Extraction ERROR] Failed to process PDF file: ${pdfPath}`);
+    console.error(`[PDF Extraction ERROR] Error type: ${error.name}, Message: ${error.message}`);
+    // console.error(`[PDF Extraction ERROR] Full error details:`, error);
+    
+    // Check if error is related to PDF structure
+    if (error.message && error.message.includes('Invalid PDF structure')) {
+      console.error(`[PDF Extraction ERROR] The file appears to be in an invalid PDF format`);
+    } else if (error.code === 'ENOENT') {
+      console.error(`[PDF Extraction ERROR] File not found at the specified path`);
+    }
+    
+    throw new Error('Could not access the file, wrong CV format submitted so candidate is not considered');
   }
 };
 
