@@ -10,12 +10,62 @@ const SignIn = () => {
   const [candidatePassword, setCandidatePassword] = useState("");
   const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
   const [error, setError] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState(0);
   const navigate = useNavigate();
   
   const handleCaptchaVerify = (verified) => {
     setIsCaptchaVerified(verified);
   };
 
+  const calculatePasswordStrength = (password) => {
+    // Initialize score
+    let score = 0;
+    
+    // Empty password
+    if (password.length === 0) return 0;
+    
+    // Length check
+    if (password.length >= 8) score += 1;
+    if (password.length >= 12) score += 1;
+    
+    // Complexity checks
+    if (/[A-Z]/.test(password)) score += 1; // Has uppercase
+    if (/[a-z]/.test(password)) score += 1; // Has lowercase
+    if (/[0-9]/.test(password)) score += 1; // Has number
+    if (/[^A-Za-z0-9]/.test(password)) score += 1; // Has special char
+    
+    return Math.min(score, 5); // Max score is 5
+  };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setCandidatePassword(newPassword);
+    setPasswordStrength(calculatePasswordStrength(newPassword));
+  };
+
+  const getPasswordStrengthLabel = () => {
+    switch (passwordStrength) {
+      case 0: return "No Password";
+      case 1: return "Very Weak";
+      case 2: return "Weak";
+      case 3: return "Medium";
+      case 4: return "Strong";
+      case 5: return "Very Strong";
+      default: return "";
+    }
+  };
+
+  const getPasswordStrengthColor = () => {
+    switch (passwordStrength) {
+      case 1: return "#ff4d4d"; // Red
+      case 2: return "#ffaa00"; // Orange
+      case 3: return "#ffdd00"; // Yellow
+      case 4: return "#73e600"; // Light green
+      case 5: return "#00b300"; // Dark green
+      default: return "#e0e0e0"; // Gray
+    }
+  };
+  
   const handleCandidateSignup = async (e) => {
     e.preventDefault();
     
@@ -24,6 +74,12 @@ const SignIn = () => {
     
     if (!isCaptchaVerified) {
       alert("Please verify you are human first");
+      return;
+    }
+
+    // Optional: Add password strength requirement
+    if (passwordStrength < 3) {
+      setError("Please choose a stronger password (at least medium strength)");
       return;
     }
     
@@ -88,7 +144,6 @@ const SignIn = () => {
                 }}
               />
             </div>
-
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <input 
@@ -98,21 +153,35 @@ const SignIn = () => {
                 className="placeholder-signin" 
                 required 
                 value={candidatePassword}
-                onChange={(e) => setCandidatePassword(e.target.value)}
+                onChange={handlePasswordChange}
               />
+              {/* Password Strength Meter */}
+              <div className="password-strength-meter">
+                <div className="strength-bar">
+                  {[1, 2, 3, 4, 5].map((level) => (
+                    <div 
+                      key={level}
+                      className="strength-segment"
+                      style={{
+                        backgroundColor: level <= passwordStrength ? getPasswordStrengthColor() : "#e0e0e0",
+                      }}
+                    ></div>
+                  ))}
+                </div>
+                <div className="strength-label">
+                  {passwordStrength > 0 && `Password Strength: ${getPasswordStrengthLabel()}`}
+                </div>
+              </div>
             </div>
-
             <div className="signin-options">
               <div className="remember-me">
                 <input type="checkbox" id="remember" />
                 <label htmlFor="remember">Remember Me</label>
               </div>
             </div>
-
             <div className="captcha-wrapper">
               <Captcha onVerify={handleCaptchaVerify} />
             </div>
-
             <button 
               type="submit" 
               className="signin-button"

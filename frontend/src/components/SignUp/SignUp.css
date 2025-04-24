@@ -212,3 +212,36 @@ input:focus {
     margin-left: 5px;
   }
 }
+
+
+/* Password Strength Meter styling */
+.password-strength-meter {
+  margin-top: 8px;
+}
+
+.strength-bar {
+  display: flex;
+  height: 5px;
+  margin-bottom: 5px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.strength-segment {
+  flex: 1;
+  height: 100%;
+  margin-right: 2px;
+  transition: background-color 0.3s ease;
+}
+
+.strength-segment:last-child {
+  margin-right: 0;
+}
+
+.strength-label {
+  font-size: 0.75rem;
+  text-align: right;
+  margin-top: 2px;
+  color: #666;
+  height: 1rem;
+}
