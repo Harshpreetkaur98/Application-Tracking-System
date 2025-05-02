@@ -113,8 +113,8 @@ const CvScanner = () => {
       <div className="cv-scanner-container">
       <div className="cv-scanner-header">
         <h1>CV Feedback Generator</h1>
-        <p>Get personalized feedback on your CV for specific job positions</p>
-      </div>
+        <p>Get personalized feedback on your CV for specific job positions — available once for free. To access this service again, please register as a User.</p>
+        </div>
 
       {message && <div className="success-message">{message}</div>}
       {error && <div className="error-message">{error}</div>}
