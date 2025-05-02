@@ -7,6 +7,7 @@ import CandidateApp from "./components/Portals/CandidatePortal/CandidateApp";
 import SignUp from "./components/SignUp/SignUp";
 import Footer from "./components/Footer/Footer";
 import HowToUse from "./components/HowToUse/HowToUse";
+import CvScanner from "./components/ScanCV/CvScanner";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/ScanCV" element={<ScanCvPage />} />
+        <Route path="/cv-scanner" element={<CvScanner />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/SignUp" element={<SignUp />} />
         <Route path="/how-to-use" element={<HowToUse />} />

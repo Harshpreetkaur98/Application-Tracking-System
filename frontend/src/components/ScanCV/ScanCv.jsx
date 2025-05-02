@@ -1,4 +1,3 @@
-import "react";
 import "./scanCv.css"; 
 import { useNavigate } from "react-router-dom";
 
@@ -6,7 +5,7 @@ const ScanCv = () => {
     const navigate = useNavigate();
   
     const handleClick = () => {
-      navigate("/scan-cv");
+      navigate("/cv-scanner");
     };
 
     return (

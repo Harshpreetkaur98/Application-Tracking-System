@@ -6,11 +6,13 @@ const Footer = () => {
       <div className="footer-content">
         <div className="newsletter-section">
           <div className="newsletter-container">
-            <input
+          <input
               type="email"
               className="newsletter-input"
               placeholder="Subscribe to our Newsletter"
+              style={{ width: "30%" }}
             />
+
             <button className="subscribe-button">Subscribe</button>
           </div>
         </div>
