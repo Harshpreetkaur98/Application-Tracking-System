@@ -11,6 +11,7 @@ const SignIn = () => {
   const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
   const [error, setError] = useState("");
   const [passwordStrength, setPasswordStrength] = useState(0);
+  const [meetsPasswordRequirements, setMeetsPasswordRequirements] = useState(false);
   const navigate = useNavigate();
   
   const handleCaptchaVerify = (verified) => {
@@ -41,6 +42,16 @@ const SignIn = () => {
     const newPassword = e.target.value;
     setCandidatePassword(newPassword);
     setPasswordStrength(calculatePasswordStrength(newPassword));
+    
+    // Check if password meets all requirements
+    const meetsRequirements = 
+      newPassword.length >= 6 && 
+      newPassword.length <= 12 && 
+      /[A-Z]/.test(newPassword) && 
+      /[0-9]/.test(newPassword) && 
+      /[^A-Za-z0-9]/.test(newPassword);
+    
+    setMeetsPasswordRequirements(meetsRequirements);
   };
 
   const getPasswordStrengthLabel = () => {
@@ -71,7 +82,17 @@ const SignIn = () => {
     
     // Clear previous error messages
     setError("");
+
+    if (!isCaptchaVerified) {
+      alert("Please verify you are human first");
+      return;
+    }
     
+    if (!meetsPasswordRequirements) {
+      setError("Password must be 6-12 characters with at least 1 uppercase letter, 1 digit, and 1 special character");
+      return;
+    }
+
     if (!isCaptchaVerified) {
       alert("Please verify you are human first");
       return;
@@ -171,6 +192,25 @@ const SignIn = () => {
                 <div className="strength-label">
                   {passwordStrength > 0 && `Password Strength: ${getPasswordStrengthLabel()}`}
                 </div>
+              </div>
+              
+              {/* Password Requirments */}
+              <div className="password-requirements">
+                <p className="requirements-title">Password must have:</p>
+                <ul className="requirements-list">
+                  <li className={candidatePassword.length >= 6 && candidatePassword.length <= 12 ? "requirement-met" : "requirement"}>
+                    6-12 characters
+                  </li>
+                  <li className={/[A-Z]/.test(candidatePassword) ? "requirement-met" : "requirement"}>
+                    At least 1 uppercase letter
+                  </li>
+                  <li className={/[0-9]/.test(candidatePassword) ? "requirement-met" : "requirement"}>
+                    At least 1 digit
+                  </li>
+                  <li className={/[^A-Za-z0-9]/.test(candidatePassword) ? "requirement-met" : "requirement"}>
+                    At least 1 special character
+                  </li>
+                </ul>
               </div>
             </div>
             <div className="signin-options">

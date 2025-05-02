@@ -245,3 +245,51 @@ input:focus {
   color: #666;
   height: 1rem;
 }
+
+/* Replace the previous password-requirements styles with these */
+.password-requirements {
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.requirements-title {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.requirements-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.requirements-list li {
+  font-size: 0.8rem;
+  margin-bottom: 3px;
+  padding-left: 15px;
+  position: relative;
+}
+
+.requirements-list li.requirement {
+  color: #888;
+}
+
+.requirements-list li.requirement-met {
+  color: #4CAF50; /* Green color */
+  font-weight: 500;
+}
+
+.requirements-list li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+}
+
+.requirements-list li.requirement:before {
+  color: #888;
+}
+
+.requirements-list li.requirement-met:before {
+  color: #4CAF50; /* Green color */
+}
