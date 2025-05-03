@@ -10,7 +10,7 @@ function ProfilePage() {
     cv: ''
   });
 
-  const userId = '660000000000000000000000'; // replace with real user ID
+  const userId = '660000000000000000000000'; 
 
   useEffect(() => {
     fetch(`http://localhost:5000/api/profile/${userId}`)

@@ -32,7 +32,6 @@ const JobListings = ({ onEditJob }) => {
     if (window.confirm("Are you sure you want to delete this job posting?")) {
       try {
         await axios.delete(`http://localhost:5000/api/jobs/${jobId}`);
-        // Remove the deleted job from the state
         setJobs(jobs.filter(job => job._id !== jobId));
         alert("Job deleted successfully");
       } catch (error) {

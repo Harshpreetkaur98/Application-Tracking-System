@@ -19,7 +19,6 @@ const EmployerPortal = () => {
   };
 
   useEffect(() => {
-    // Function to fetch jobs from the database
     const fetchJobs = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/jobs');

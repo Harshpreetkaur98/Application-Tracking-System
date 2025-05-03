@@ -24,13 +24,11 @@ function CandidatePortal() {
       [name]: value
     });
     
-    // Check application status when email changes
     if (name === 'email' && value && selectedJob) {
       checkApplicationStatus(selectedJob._id, value);
     }
   };
   
-  // Create a separate function for checking application status
   const checkApplicationStatus = async (jobId, email) => {
     if (jobId && email) {
       try {
@@ -99,7 +97,6 @@ function CandidatePortal() {
     setApplicationStatus(null); // Reset status when applying to new job
   };
 
-  // Removed duplicate handleInputChange function
 
   const handleFileChange = (e) => {
     setApplicationForm({

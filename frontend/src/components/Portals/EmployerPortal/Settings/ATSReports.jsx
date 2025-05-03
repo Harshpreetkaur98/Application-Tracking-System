@@ -15,7 +15,7 @@ import {
   ThumbsDown,
   AlertCircle
 } from 'lucide-react';
-import './ATSReports.css'; // We'll create this CSS file
+import './ATSReports.css';
 
 const ATSReports = () => {
   const [jobs, setJobs] = useState([]);
@@ -23,7 +23,7 @@ const ATSReports = () => {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedCandidate, setExpandedCandidate] = useState(null);
-  const [activeTab, setActiveTab] = useState('all'); // 'all', 'selected', 'rejected'
+  const [activeTab, setActiveTab] = useState('all'); 
   const [jobStats, setJobStats] = useState(null);
 
   useEffect(() => {

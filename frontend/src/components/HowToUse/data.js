@@ -7,7 +7,7 @@ export const guideData = [
     {
       title: "Profile Management",
       description: "Your profile is your professional identity on hAts. Complete your profile to increase your visibility to potential employers.",
-      imageUrl: profileManagement, // Replace with actual image
+      imageUrl: profileManagement, 
       steps: [
         "Navigate to the 'Profile' section from your candidate dashboard",
         "Upload your latest CV/resume in PDF format",
@@ -24,7 +24,7 @@ export const guideData = [
     {
       title: "Your Activity Dashboard",
       description: "Track all your job applications in one place and stay updated on their status throughout the hiring process.",
-      imageUrl: activityManagement, // Replace with actual image
+      imageUrl: activityManagement, 
       steps: [
         "Access 'Your Activity' from the main navigation menu",
         "View all your active applications and their current status",
@@ -41,7 +41,7 @@ export const guideData = [
     {
       title: "Job Search & Application",
       description: "Find and apply to positions that match your skills and career goals using our powerful search and filter tools.",
-      imageUrl: jobApplication, // Replace with actual image
+      imageUrl: jobApplication, 
       steps: [
         "Use the search bar to find jobs by title, company, or keywords",
         "Apply filters to narrow results by location, salary, job type, etc.",
@@ -58,7 +58,7 @@ export const guideData = [
     {
       title: "Understanding Feedback",
       description: "Get detailed, constructive feedback on your applications to continuously improve your job search strategy.",
-      imageUrl: skillsManagement, // Replace with actual image
+      imageUrl: skillsManagement, 
       steps: [
         "Receive email notifications when feedback is available",
         "Review the specific areas of improvement highlighted in the feedback",

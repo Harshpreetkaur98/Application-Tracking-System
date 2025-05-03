@@ -6,7 +6,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  position: relative; /* Added this to make dropdown positioning work */
+  position: relative; 
 }
 
 .navbar-candidate .logo {
@@ -28,16 +28,16 @@
 
 /* Logo container styling */
 .logo-container-candidate {
-  height: 40px; /* Adjust the height of the logo */
-  width: auto; /* Keep aspect ratio intact */
+  height: 40px; 
+  width: auto; 
   display: flex;
-  align-items: center; /* Center logo vertically */
+  align-items: center; 
 }
 
 /* Logo image styling */
 .logo-candidate {
-  height: 60px; /* Make the logo fit the container */
-  width: auto; /* Keep aspect ratio intact */
+  height: 60px;
+  width: auto; 
 }
 
 /* Profile Logo Style */
@@ -47,18 +47,18 @@
   align-items: center;
   justify-content: center;
   padding: 10px;
-  margin-left: 20px; /* Optional, to create space between profile and other nav items */
+  margin-left: 20px; 
 }
 
 /* Dropdown Menu Style */
 .dropdown-menu {
   position: absolute;
-  top: 50px; /* Adjust position below the profile logo */
-  right: 0; /* Align the dropdown to the right of the profile logo */
+  top: 50px; 
+  right: 0; 
   background-color: #222222;
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  width: 150px; /* Width of the dropdown */
+  width: 150px; 
   z-index: 1000;
 }
 

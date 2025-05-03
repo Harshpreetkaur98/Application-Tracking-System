@@ -5,7 +5,7 @@ const api = axios.create({
   baseURL: 'http://localhost:5000/api',
 });
 
-// 🟢 Candidate Login
+// Candidate Login
 export const loginUser = async (email, password) => {
   try {
     const response = await api.post('/candidates/login', { email, password });
@@ -15,7 +15,7 @@ export const loginUser = async (email, password) => {
   }
 };
 
-// 🟢 Employer Login (Fixed: Added password field)
+// Employer Login (Fixed: Added password field)
 export const loginEmployer = async (email, password) => {
   try {
     const response = await api.post('/employers/login', { email, password });
@@ -25,7 +25,7 @@ export const loginEmployer = async (email, password) => {
   }
 };
 
-// 🟢 Register Candidate
+// Register Candidate
 export const registerCandidate = async (email, password) => {
   try {
     const response = await api.post("/candidates/register", { email, password });
@@ -45,7 +45,7 @@ export const registerEmployer = async (email, password) => {
 };
 
 
-// 🟢 Get all jobs
+// Get all jobs
 export const getJobs = async () => {
   try {
     const response = await api.get('/jobs');

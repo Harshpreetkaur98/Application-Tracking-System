@@ -3,9 +3,7 @@ import {
   Settings, 
   User, 
   LogOut, 
-  // MessageSquare, 
   Briefcase, 
-  // LayoutDashboard, 
   FileText, 
   PlusCircle, 
   HelpCircle 
@@ -13,8 +11,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import "./SettingsPage.css";
 import PostJobForm from "./PostJobForm";
-import ATSReports from "./ATSReports"; // Import the ATS Reports component
-import JobListings from "./JobListing"; // Import the JobListings component
+import ATSReports from "./ATSReports";
+import JobListings from "./JobListing"; 
 
 const SettingsPage = () => {
   const [activeSection, setActiveSection] = useState(null);
@@ -30,16 +28,14 @@ const SettingsPage = () => {
   // Handle job edit
   const handleEditJob = (job) => {
     setJobToEdit(job);
-    setActiveSection("post-job"); // Switch to post job form for editing
+    setActiveSection("post-job"); 
   };
 
-  // Handle job saved (both new and edit)
   const handleJobSaved = () => {
-    setJobToEdit(null); // Clear the job being edited
-    setActiveSection("jobs"); // Go back to job listings after saving
+    setJobToEdit(null); 
+    setActiveSection("jobs"); 
   };
 
-  // Function to render content based on active section
   const renderContent = () => {
     switch (activeSection) {
       case "applications":
@@ -49,7 +45,7 @@ const SettingsPage = () => {
       case "jobs":
         return <JobListings onEditJob={handleEditJob} />;
       case "reports":
-        return <ATSReports />; // Render our ATS Reports component
+        return <ATSReports />; 
       case "post-job":
         return <PostJobForm jobToEdit={jobToEdit} onJobSaved={handleJobSaved} />;
       default:
@@ -59,11 +55,9 @@ const SettingsPage = () => {
 
   return (
     <div className="settings-container">
-      {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-top">
           {activeSection === "settings" ? (
-            // Profile Icon with Dropdown
             <div className="profile-container">
               <User 
                 className="icon profile-icon" 
@@ -86,35 +80,17 @@ const SettingsPage = () => {
           )}
         </div>
 
-        <div className="sidebar-nav">
-          {/* Sidebar Navigation */}
-          {/* <button 
-            className={`nav-button ${activeSection === "chat" ? "active" : ""}`} 
-            onClick={() => setActiveSection("chat")}
-          >
-            <MessageSquare className="icon" />
-            <span className="nav-label">Messages</span>
-          </button> */}
-          
+        <div className="sidebar-nav">          
           <button 
             className={`nav-button ${activeSection === "jobs" ? "active" : ""}`} 
             onClick={() => {
-              setJobToEdit(null); // Clear any job being edited
+              setJobToEdit(null); 
               setActiveSection("jobs");
             }}
           >
             <Briefcase className="icon" />
             <span className="nav-label">Jobs</span>
-          </button>
-          
-          {/* <button 
-            className={`nav-button ${activeSection === "dashboard" ? "active" : ""}`} 
-            onClick={() => setActiveSection("dashboard")}
-          >
-            <LayoutDashboard className="icon" />
-            <span className="nav-label">Dashboard</span>
-          </button> */}
-          
+          </button>          
           <button 
             className={`nav-button ${activeSection === "reports" ? "active" : ""}`} 
             onClick={() => setActiveSection("reports")}
@@ -126,7 +102,7 @@ const SettingsPage = () => {
           <button 
             className={`nav-button ${activeSection === "post-job" ? "active" : ""}`} 
             onClick={() => {
-              setJobToEdit(null); // Clear any job being edited when posting a new job
+              setJobToEdit(null); 
               setActiveSection("post-job");
             }}
           >

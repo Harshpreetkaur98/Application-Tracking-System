@@ -7,7 +7,7 @@ import ProfilePage from './ProfilePage/ProfilePage';
 function CandidateApp() {
   return (
     <div>
-      <CNavbar /> {/* No need to pass the handleActivityPage prop here */}
+      <CNavbar /> 
       <Routes>
         <Route path="/" element={<CPortalPage />} />
         <Route path="/activity" element={<YourActivity />} />

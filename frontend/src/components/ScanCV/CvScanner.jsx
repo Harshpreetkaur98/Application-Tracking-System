@@ -57,7 +57,6 @@ const CvScanner = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate inputs
     if (!file) {
       setError("Please upload your CV");
       return;

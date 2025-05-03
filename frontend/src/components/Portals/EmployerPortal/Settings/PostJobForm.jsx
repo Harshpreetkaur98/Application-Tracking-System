@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios"; // Make sure to install axios if not already installed
+import axios from "axios"; 
 import "./PostJobForm.css";
 import PropTypes from "prop-types";
 
@@ -14,7 +14,6 @@ const PostJobForm = ({ jobToEdit, onJobSaved }) => {
     salary: "",
   });
 
-  // Check if we're editing a job and update the form accordingly
   useEffect(() => {
     if (jobToEdit) {
       setFormData({
@@ -27,7 +26,6 @@ const PostJobForm = ({ jobToEdit, onJobSaved }) => {
         salary: jobToEdit.salaryRange || "",
       });
     } else {
-      // Reset form if not editing
       setFormData({
         title: "",
         company: "",
@@ -51,7 +49,7 @@ const PostJobForm = ({ jobToEdit, onJobSaved }) => {
       const jobData = {
         title: formData.title,
         description: formData.description,
-        skillsRequired: formData.requirements.split(",").map(skill => skill.trim()), // Convert comma separated skills to array
+        skillsRequired: formData.requirements.split(",").map(skill => skill.trim()), 
         location: formData.location,
         salaryRange: formData.salary,
       };
@@ -59,16 +57,13 @@ const PostJobForm = ({ jobToEdit, onJobSaved }) => {
       let response;
       
       if (jobToEdit) {
-        // Update existing job - FIXED URL
         response = await axios.put(`http://localhost:5000/api/jobs/${jobToEdit._id}`, jobData);
         alert("Job Updated: " + response.data.message);
       } else {
-        // Create new job
         response = await axios.post("http://localhost:5000/api/jobs/post", jobData);
         alert("Job Posted: " + response.data.message);
       }
   
-      // Clear form after submission
       setFormData({
         title: "",
         company: "",
@@ -79,7 +74,6 @@ const PostJobForm = ({ jobToEdit, onJobSaved }) => {
         salary: "",
       });
   
-      // Notify parent component that a job was saved
       if (onJobSaved) {
         onJobSaved();
       }
@@ -190,7 +184,7 @@ const PostJobForm = ({ jobToEdit, onJobSaved }) => {
             <button
               type="button"
               onClick={() => {
-                if (onJobSaved) onJobSaved(); // Go back to job listings
+                if (onJobSaved) onJobSaved(); 
               }}
               className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition"
             >

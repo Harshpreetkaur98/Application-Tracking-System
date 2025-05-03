@@ -1,12 +1,12 @@
 .scan-cv-container {
   position: fixed;
-  bottom: 50px;  /* 50px from the bottom of the viewport */
-  left: 50%;  /* Center horizontally */
-  transform: translateX(-50%);  /* Adjust the position to truly center */
+  bottom: 50px;  
+  left: 50%; 
+  transform: translateX(-50%); 
   z-index: 1000;
   padding: 10px;
   border-radius: 10px;
-  pointer-events: none; /* Prevent interaction with other elements underneath */
+  pointer-events: none; /
 }
 
 .scan-cv-container::before {

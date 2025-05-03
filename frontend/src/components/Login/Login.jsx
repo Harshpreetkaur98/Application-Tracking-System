@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../../api/api";  // Import the loginUser function
+import { loginUser } from "../../api/api"; 
 import "./Login.css";
 import Navbar from "../Navbar/Navbar";
 import Captcha from "../Captcha/Captcha";
@@ -34,16 +34,16 @@ const Login = () => {
       if (data.message === "ADMIN login successfull") {
         console.log("ADMIN logged into the system.");
         localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/Employer-Portal");  // ✅ Navigate to Employer Portal for Admin
+        navigate("/Employer-Portal");  
       } else if (data.message === "Login successful") {
         const user = data.user;
         localStorage.setItem("user", JSON.stringify(user));
-        navigate("/Candidate-Portal"); // ✅ Navigate for Candidate role
+        navigate("/Candidate-Portal"); 
   
         if (user.role === "admin") {
-          navigate("/Employer-Portal");  // ✅ Navigate for Admin role (if role exists)
+          navigate("/Employer-Portal");  
         } else if (user.role === "candidate") {
-          navigate("/Candidate-Portal"); // ✅ Navigate for Candidate role
+          navigate("/Candidate-Portal"); 
         }
       }
     } catch (error) {

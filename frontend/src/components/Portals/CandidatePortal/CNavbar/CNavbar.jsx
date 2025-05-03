@@ -17,9 +17,6 @@ function CNavbar() {
 
   const handleLogout = () => {
     console.log("Logging out...");
-    // Add your logout logic here (e.g., clearing session, redirecting to login page)
-    // sessionStorage.removeItem('user');
-    // navigate('/login');
   };
 
   const handleActivityPage = () => {

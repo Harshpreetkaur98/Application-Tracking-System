@@ -276,7 +276,7 @@ input:focus {
 }
 
 .requirements-list li.requirement-met {
-  color: #4CAF50; /* Green color */
+  color: #4CAF50; 
   font-weight: 500;
 }
 
@@ -291,5 +291,5 @@ input:focus {
 }
 
 .requirements-list li.requirement-met:before {
-  color: #4CAF50; /* Green color */
+  color: #4CAF50; 
 }

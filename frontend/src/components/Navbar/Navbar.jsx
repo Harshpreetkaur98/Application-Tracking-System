@@ -21,11 +21,9 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleClickWhyUs = () => {
-    // Check if we're already on the Landing Page
     const whyUsSection = document.getElementById("whyus");
 
     if (window.location.pathname === "/") {
-      // On Landing Page, scroll to the "Why Us" section
       if (whyUsSection) {
         window.scrollTo({
           top: whyUsSection.offsetTop,
@@ -33,7 +31,6 @@ const Navbar = () => {
         });
       }
     } else {
-      // If not on the Landing Page, navigate there first and then scroll
       navigate("/");
     }
   };

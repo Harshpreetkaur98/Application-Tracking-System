@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./components/LandingPage/LandingPage";
-import ScanCvPage from "./components/ScanCV/ScanCvPage";
 import Login from "./components/Login/Login";
 import EmployerApp from "./components/Portals/EmployerPortal/EmployerApp";
 import CandidateApp from "./components/Portals/CandidatePortal/CandidateApp";
@@ -14,7 +13,6 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/ScanCV" element={<ScanCvPage />} />
         <Route path="/cv-scanner" element={<CvScanner />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/SignUp" element={<SignUp />} />

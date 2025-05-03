@@ -9,16 +9,14 @@ import WhyUs from "../WhyUs/WhyUs";
 const LandingPage = () => {
   const whyUsRef = useRef(null);
 
-  // useEffect to ensure scrolls correctly when landing page is loaded
   useEffect(() => {
-    // If the URL hash is #whyus, scroll to the Why Us section
     if (window.location.hash === "#whyus" && whyUsRef.current) {
       window.scrollTo({
         top: whyUsRef.current.offsetTop,
         behavior: "smooth",
       });
     }
-  }, [window.location.hash]); // Re-run effect when the hash changes
+  }, [window.location.hash]);
 
   return (
     <div>
