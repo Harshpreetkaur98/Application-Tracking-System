@@ -49,7 +49,6 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
 
     await newApplication.save();
 
-    // Trigger feedback process in background
     processApplicationFeedback(newApplication._id)
       .catch(err => console.error('Error in feedback process:', err));
 
@@ -68,7 +67,6 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
   }
 });
 
-// Add this new route to get top candidates
 router.get('/job/:jobId/top', async (req, res) => {
   try {
     const applications = await Application.find({ jobId: req.params.jobId })
@@ -82,7 +80,6 @@ router.get('/job/:jobId/top', async (req, res) => {
   }
 });
 
-// Add this new route
 router.get('/status', async (req, res) => {
   try {
     const { jobId, email } = req.query;
@@ -114,13 +111,11 @@ router.get('/status', async (req, res) => {
   }
 });
 
-// Add this route for downloading resumes
 router.get('/resume/:filename', (req, res) => {
   const file = path.join(__dirname, '../../uploads/resumes', req.params.filename);
   res.download(file);
 });
 
-// Get all applications for a job (for employers)
 router.get('/job/:jobId', async (req, res) => {
   try {
     const applications = await Application.find({ jobId: req.params.jobId })
@@ -132,7 +127,6 @@ router.get('/job/:jobId', async (req, res) => {
   }
 });
 
-// Update application status (for employers)
 router.put('/:id/status', async (req, res) => {
   try {
     const { status } = req.body;
@@ -156,7 +150,6 @@ router.put('/:id/status', async (req, res) => {
   }
 });
 
-// Add feedback to application (for employers)
 router.put('/:id/feedback', async (req, res) => {
   try {
     const { feedback } = req.body;

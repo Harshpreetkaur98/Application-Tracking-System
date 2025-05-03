@@ -34,9 +34,9 @@ const applicationSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  skillsMatch: [String],    // Added field to store matching skills
-  missingSkills: [String],  // Added field to store missing skills
-  experienceGap: String,    // Added field to store experience gap info
+  skillsMatch: [String],    
+  missingSkills: [String],  
+  experienceGap: String,    
   appliedAt: { 
     type: Date, 
     default: Date.now 

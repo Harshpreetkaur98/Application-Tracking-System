@@ -25,9 +25,7 @@ const extractTextFromPdf = async (pdfPath) => {
   } catch (error) {
     console.error(`[PDF Extraction ERROR] Failed to process PDF file: ${pdfPath}`);
     console.error(`[PDF Extraction ERROR] Error type: ${error.name}, Message: ${error.message}`);
-    // console.error(`[PDF Extraction ERROR] Full error details:`, error);
     
-    // Check if error is related to PDF structure
     if (error.message && error.message.includes('Invalid PDF structure')) {
       console.error(`[PDF Extraction ERROR] The file appears to be in an invalid PDF format`);
     } else if (error.code === 'ENOENT') {
@@ -69,7 +67,6 @@ const generateThankYouEmail = async (jobTitle) => {
       }
     );
 
-    // Add proper error handling and logging for debugging
     if (!response.data || !response.data.candidates || !response.data.candidates[0]) {
       console.error('Unexpected API response structure:', JSON.stringify(response.data));
       throw new Error('Invalid response from Gemini API');
@@ -92,7 +89,6 @@ const generateThankYouEmail = async (jobTitle) => {
     return emailContent;
   } catch (error) {
     console.error('Error generating thank you email:', error.response?.data || error.message);
-    // Provide a fallback email if API fails
     return `Dear candidate,
 
 Thank you for applying for ${jobTitle || 'the position'} at hAts. We have received your application and will review it carefully.
@@ -191,12 +187,11 @@ const sendEmail = async (to, emailContent, isFeedback = false) => {
       ? 'Your Application to hAts - Feedback' 
       : 'Thank you for your application to hAts';
 
-    // Improve HTML formatting for better email client compatibility
     const mailOptions = {
       from: `hAts Team <${process.env.EMAIL_USER}>`,
       to,
       subject,
-      text: emailContent, // Plain text version for clients that don't support HTML
+      text: emailContent, 
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; line-height: 1.6;">
           <div style="margin-bottom: 20px;">
@@ -210,7 +205,7 @@ const sendEmail = async (to, emailContent, isFeedback = false) => {
       attachments: [{
         filename: 'logo.png',
         content: Buffer.from(logoBase64, 'base64'),
-        cid: 'companyLogo' // Content ID referenced in the HTML
+        cid: 'companyLogo' 
       }]
     };
 
@@ -236,22 +231,18 @@ hAts Team`;
 
 
 const generateSkillsHighlightEmail = async (jobTitle, skills, cvText) => {
-  // Check if CV meets minimum length requirement
-  // A typical CV should be at least 1500 characters (roughly 300 words)
   const MIN_CV_LENGTH = 1500;
   
   if (!cvText || cvText.length < MIN_CV_LENGTH) {
     console.log('CV length insufficient for skills highlight email. Length:', cvText ? cvText.length : 0);
-    return false; // Return false to indicate email should not be sent
+    return false; 
   }
   
   try {
-    // Ensure we have at least one skill to highlight
     const skillsToHighlight = Array.isArray(skills) && skills.length > 0 
-      ? skills.slice(0, 2) // Take up to 2 skills
+      ? skills.slice(0, 2) 
       : ["professional background", "qualifications"];
     
-    // Build the API prompt
     const prompt = `Generate a professional email highlighting specific skills of a job candidate. Follow these guidelines:
     
     1. FORMAT: Begin with "Dear Candidate," and end with "Best regards, hAts Team"
@@ -282,12 +273,10 @@ const generateSkillsHighlightEmail = async (jobTitle, skills, cvText) => {
         }
       }
     );
-    // Add proper error handling
     if (!response.data || !response.data.candidates || !response.data.candidates[0]) {
       console.error('Unexpected API response structure:', JSON.stringify(response.data));
       throw new Error('Invalid response from Gemini API');
     }
-    // Check for the correct path to text content
     if (!response.data.candidates[0].content || 
         !response.data.candidates[0].content.parts || 
         !response.data.candidates[0].content.parts[0] ||
@@ -305,7 +294,6 @@ const generateSkillsHighlightEmail = async (jobTitle, skills, cvText) => {
   } catch (error) {
     console.error('Error generating skills highlight email:', error.response?.data || error.message);
     
-    // Only return fallback email if CV meets length requirements
     const skillsToHighlight = Array.isArray(skills) && skills.length > 0 
       ? skills.slice(0, 2) 
       : ["your professional background", "your qualifications"];
@@ -331,10 +319,8 @@ hAts Team`;
   }
 };
 
-// ... (previous imports remain the same)
 const { calculateATSScore } = require('./atsScoringService');
 
-// Add this new function
 const generateAcceptanceEmail = async (jobTitle) => {
       try {
         const prompt = `Generate a professional job offer acceptance email with these exact specifications:
@@ -390,7 +376,6 @@ const generateAcceptanceEmail = async (jobTitle) => {
   }
 };
 
-// Modify processApplicationFeedback
 const processApplicationFeedback = async (applicationId) => {
   try {
     const application = await Application.findById(applicationId).populate('jobId');
@@ -399,25 +384,22 @@ const processApplicationFeedback = async (applicationId) => {
     const cvText = await extractTextFromPdf(application.resumePath);
     const jobSpec = `${application.jobId.title}\n${application.jobId.description}\nRequired Skills: ${application.jobId.skillsRequired.join(', ')}`;
 
-    // Calculate ATS score with error handling
     let atsResult;
     try {
       atsResult = await calculateATSScore(cvText, jobSpec);
-      console.log("ATS Result:", atsResult); // Add this for debugging
+      console.log("ATS Result:", atsResult); 
     } catch (error) {
       console.error('ATS scoring failed, using fallback evaluation:', error);
       atsResult = {
-        score: 30, // Default to rejection score if calculation fails
+        score: 30, 
         missingSkills: ['System could not evaluate your application properly'],
         skillsMatch: []
       };
     }
 
-    // Ensure skills data is properly formatted as arrays
     const skillsMatch = Array.isArray(atsResult.skillsMatch) ? atsResult.skillsMatch : [];
     const missingSkills = Array.isArray(atsResult.missingSkills) ? atsResult.missingSkills : [];
 
-    // Update application with score and skills data
     await Application.findByIdAndUpdate(applicationId, {
       atsScore: atsResult.score,
       status: 'Reviewed',
@@ -444,14 +426,12 @@ const processApplicationFeedback = async (applicationId) => {
     setTimeout(async () => {
       try {
         
-        // Send skills highlight email only if CV has sufficient content
         const skillsHighlightEmailContent = await generateSkillsHighlightEmail(
           application.jobId.title, 
-          skillsMatch, // Use the skills that matched from ATS analysis
-          cvText // Pass the CV text for length checking
+          skillsMatch, 
+          cvText 
         );
         
-        // Only proceed with sending email if we have valid content
         if (skillsHighlightEmailContent) {
           await sendEmail(application.candidateEmail, skillsHighlightEmailContent);
           console.log(`Skills highlight email sent to ${application.candidateEmail}`);
@@ -463,23 +443,18 @@ const processApplicationFeedback = async (applicationId) => {
       }
     }, 40000);
 
-    // Process selection after 1 minute
     setTimeout(async () => {
       try {
-        // Get all applications for this job
         const allApplications = await Application.find({ jobId: application.jobId._id })
           .sort({ atsScore: -1 });
 
-        // Determine selection based on both ranking AND minimum score
-        const MIN_ACCEPTANCE_SCORE = 70; // Set your threshold here
+        const MIN_ACCEPTANCE_SCORE = 70; 
         const isSelected = allApplications.findIndex(app => app._id.equals(applicationId)) < 5 
                           && atsResult.score >= MIN_ACCEPTANCE_SCORE;
 
         if (isSelected) {
-          // Create detailed feedback for selected candidates
           let feedback = 'Congratulations! You have been selected for the next round.';
           
-          // Add skills match information to feedback
           if (skillsMatch.length > 0) {
             feedback += '\n\nStrengths that matched our requirements:';
             skillsMatch.forEach(skill => {
@@ -494,12 +469,10 @@ const processApplicationFeedback = async (applicationId) => {
             feedback: feedback
           });
         } else {
-          // Enhanced rejection feedback
           let feedback;
           if (atsResult.score < MIN_ACCEPTANCE_SCORE) {
             feedback = `Your application scored ${atsResult.score}/100 (minimum required: ${MIN_ACCEPTANCE_SCORE}).\n\n`;
             
-            // Add skills match information if any
             if (skillsMatch.length > 0) {
               feedback += 'Your strengths:\n';
               skillsMatch.forEach(skill => {
@@ -508,7 +481,6 @@ const processApplicationFeedback = async (applicationId) => {
               feedback += '\n';
             }
             
-            // Add missing skills information
             feedback += 'Areas for improvement:\n';
             if (missingSkills.length > 0) {
               missingSkills.forEach(skill => {
@@ -521,7 +493,6 @@ const processApplicationFeedback = async (applicationId) => {
             feedback = 'While your application was strong, we had limited positions available.\n';
             feedback += 'We encourage you to apply for future openings.';
             
-            // Still include skills information
             if (skillsMatch.length > 0) {
               feedback += '\n\nYour strengths that matched our requirements:';
               skillsMatch.forEach(skill => {
@@ -558,8 +529,6 @@ const processApplicationFeedback = async (applicationId) => {
     throw error;
   }
 };
-
-// ... (rest of the file remains the same)
 
 module.exports = {
   processApplicationFeedback

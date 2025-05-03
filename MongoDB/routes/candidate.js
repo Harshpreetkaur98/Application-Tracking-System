@@ -4,9 +4,6 @@ const Candidate = require("../models/candidate");
 
 const router = express.Router();
 
-
-
-// In your candidate routes file
 router.get('/', async (req, res) => {
   try {
     const candidates = await Candidate.find().sort({ createdAt: -1 }).limit(10);
@@ -17,30 +14,24 @@ router.get('/', async (req, res) => {
 });
 
 
-// ✅ Candidate Signup Route
 router.post("/register", async (req, res) => {
   try {
     const { name="", email, password, cvFilePath = "" } = req.body;
 
-    // ✅ Check if all required fields are provided
     if (!email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // ✅ Check if email already exists
     const existingCandidate = await Candidate.findOne({ email });
     if (existingCandidate) {
       return res.status(400).json({ message: "Email already in use" });
     }
 
-    // ✅ Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ✅ Create new candidate
     const newCandidate = new Candidate({ name, email, password: hashedPassword, cvFilePath });
     await newCandidate.save();
 
-    // ✅ Return success message (excluding password)
     res.status(201).json({
       message: "Candidate registered successfully",
       user: { name: newCandidate.name, email: newCandidate.email },
@@ -51,12 +42,10 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// ✅ Candidate Login Route
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // ✅ Check if email and password are provided
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password are required" });
     }
@@ -69,19 +58,16 @@ router.post("/login", async (req, res) => {
     }
     
     else{
-      // ✅ Find candidate by email
         const candidate = await Candidate.findOne({ email });
         if (!candidate) {
           return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        // ✅ Compare password
         const isMatch = await bcrypt.compare(password, candidate.password);
         if (!isMatch) {
           return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        // ✅ Send success response
         res.status(200).json({
           message: "Login successful",
           user: { name: candidate.name, email: candidate.email },

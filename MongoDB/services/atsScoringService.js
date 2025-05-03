@@ -29,7 +29,6 @@ const calculateATSScore = async (cvText, jobSpec) => {
 
     let resultText = response.data.candidates[0].content.parts[0].text;
     
-    // Clean the response if it contains markdown
     resultText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
     
     return JSON.parse(resultText);

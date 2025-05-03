@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 
-// MongoDB URI (replace with your actual URI or use MongoDB Atlas URL)
-const dbURI = 'mongodb://localhost:27017/ats_system'; // Local MongoDB instance
+const dbURI = 'mongodb://localhost:27017/ats_system'; 
 
-// Connect to MongoDB
 const connectDB = async () => {
   try {
     await mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true });

@@ -12,21 +12,19 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Then create resumes directory inside uploads
 const resumesDir = path.join(uploadsDir, 'resumes');
 if (!fs.existsSync(resumesDir)) {
   fs.mkdirSync(resumesDir, { recursive: true });
 }
 
 
-const candidateRoutes = require("./routes/candidate"); // Import candidate routes
-const employerRoutes = require("./routes/employer"); // Import employer routes
+const candidateRoutes = require("./routes/candidate"); 
+const employerRoutes = require("./routes/employer"); 
 const jobRoutes = require("./routes/job");
 const applicationRoutes = require("./routes/application");
 
 const app = express();
 
-// ✅ Middleware (Fixes req.body being undefined)
 app.use(express.json());
 
 app.use(cors({
@@ -34,7 +32,6 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 
-// ✅ MongoDB Connection
 mongoose
   .connect("mongodb://localhost:27017/ats_system", {
     useNewUrlParser: true,
@@ -43,7 +40,6 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
-// ✅ Routes
 app.use("/api/candidates", candidateRoutes);
 app.use("/api/employers", employerRoutes);
 app.use("/api/jobs", jobRoutes);
