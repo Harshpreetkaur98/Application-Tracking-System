@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./whyus.css";
+import "./WhyUs.css";
 import data from "./data";
 
 const WhyUs = () => {
