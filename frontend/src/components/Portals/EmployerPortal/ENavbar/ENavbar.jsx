@@ -2,7 +2,7 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, Settings } from "lucide-react";
-import "./Enavbar.css";
+import "./ENavbar.css";
 import logo from "../../../../assets/images/EmployerPortalLogo.png";
 
 const EmployerNavbar = () => {
